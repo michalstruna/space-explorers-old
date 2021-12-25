@@ -1,4 +1,5 @@
 import React from 'react'
+
 import Game from '../lib/Game'
 import { GameOptions } from '../types'
 
