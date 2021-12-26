@@ -23,7 +23,7 @@ class Game {
 
         this.shiftManager = new ShiftManager({
             keyboard: { speed: 10 },
-            dragAndDrop: {},
+            dragAndDrop: { treshold: 10 },
             resize: true,
             onX: change => this.pixi.stage.x = Math.max(-this.options.sizeX + window.innerWidth, Math.min(0, this.pixi.stage.x - change)),
             onY: change => this.pixi.stage.y = Math.max(-this.options.sizeY + window.innerHeight, Math.min(0, this.pixi.stage.y - change)),
@@ -43,7 +43,10 @@ class Game {
     private initStars(): void {
         this.pixi.stage.addChild(this.starsContainer)
 
-        const STARS = 300
+        const blurFilter = new Pixi.filters.BlurFilter(10)
+        this.starsContainer.filters = [blurFilter]
+
+        const STARS = 100
         const EDGE = 50
 
         const starPoints = getPoints({
@@ -52,7 +55,7 @@ class Game {
             maxX: this.options.sizeX - EDGE,
             minY: EDGE,
             maxY: this.options.sizeY - EDGE,
-            minDistance: 100,
+            minDistance: 250,
         })
 
         starPoints.forEach(pos => {

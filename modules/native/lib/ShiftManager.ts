@@ -48,6 +48,7 @@ class ShiftManager {
     private options: ShiftOptions
     private pressed: Set<string> = new Set()
 
+    private mousePosTreshold = { x: false, y: false }
     private prevMousePos: { x: number, y: number } | null = null
     private mousePos: { x: number, y: number } = { x: 0, y: 0 }
 
@@ -67,6 +68,7 @@ class ShiftManager {
     }
 
     private handleMouseDown = (e: MouseEvent) => {
+        this.mousePosTreshold = { x: true, y: true }
         this.prevMousePos = { x: e.pageX, y: e.pageY }
         this.mousePos = { x: e.pageX, y: e.pageY }
     }
@@ -122,13 +124,15 @@ class ShiftManager {
         if (this.prevMousePos) {
             const diffX = this.mousePos.x - this.prevMousePos.x
             const diffY = this.mousePos.y - this.prevMousePos.y
+            if (Math.abs(diffX) >= this.options.dragAndDrop!.treshold!) this.mousePosTreshold.x = false
+            if (Math.abs(diffY) >= this.options.dragAndDrop!.treshold!) this.mousePosTreshold.y = false
             
-            if (Math.abs(diffX) >= this.options.dragAndDrop?.treshold!) {
+            if (!this.mousePosTreshold.x) {
                 this.prevMousePos.x = this.mousePos.x
                 this.options.onX?.(-diffX * this.options.dragAndDrop!.speed!)
             }
 
-            if (Math.abs(diffY) >= this.options.dragAndDrop?.treshold!) {
+            if (!this.mousePosTreshold.y) {
                 this.prevMousePos.y = this.mousePos.y
                 this.options.onY?.(-diffY * this.options.dragAndDrop!.speed!)
             }
