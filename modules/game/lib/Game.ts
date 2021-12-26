@@ -11,7 +11,6 @@ class Game {
     private shiftManager: ShiftManager
     
     private starsContainer = new Pixi.Container()
-    private shift = { x: 0, y: 0 }
 
     public constructor(options: GameOptions) {
         this.options = options
@@ -22,28 +21,18 @@ class Game {
         })
         options.container.current?.appendChild(this.pixi.view)
 
-        const limitShiftX = (shift: number) => Math.max(-this.options.sizeX + window.innerWidth, Math.min(0, shift))
-        const limitShiftY = (shift: number) => Math.max(-this.options.sizeY + window.innerHeight, Math.min(0, shift))
-
         this.shiftManager = new ShiftManager({
-            keyboard: true,
-            onX: change => this.shift.x = limitShiftX(this.shift.x - change * 10),
-            onY: change => this.shift.y = limitShiftY(this.shift.y - change * 10),
-            onResize: () => {
-                this.shift.x = limitShiftX(this.shift.x)
-                this.shift.y = limitShiftY(this.shift.y)
-            }
+            keyboard: { speed: 10 },
+            dragAndDrop: {},
+            resize: true,
+            onX: change => this.pixi.stage.x = Math.max(-this.options.sizeX + window.innerWidth, Math.min(0, this.pixi.stage.x - change)),
+            onY: change => this.pixi.stage.y = Math.max(-this.options.sizeY + window.innerHeight, Math.min(0, this.pixi.stage.y - change)),
         })
 
         this.initStars()
 
         this.pixi.ticker.add(() => {
-            this.shiftManager.tick()
 
-            console.log(this.shift, this.options.sizeX)
-            
-            this.pixi.stage.x = this.shift.x
-            this.pixi.stage.y = this.shift.y
         })
     }
 
