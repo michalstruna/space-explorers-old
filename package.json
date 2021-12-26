@@ -8,6 +8,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "keycode": "^2.2.1",
         "next": "12.0.7",
         "pixi.js": "^6.2.1",
         "poisson-disk-sampling": "^2.2.2",

@@ -18,8 +18,4 @@ const Game: NextPage = () => {
     )
 }
 
-Game.getInitialProps = () => {
-    return {}
-}
-
 export default Game
