@@ -1,4 +1,5 @@
 import * as Pixi from 'pixi.js'
+import Http from '../../async/lib/Http'
 import ShiftManager from '../../native/lib/ShiftManager'
 
 import { GameOptions } from '../types'
@@ -11,6 +12,7 @@ class Game {
     private shiftManager: ShiftManager
     
     private starsContainer = new Pixi.Container()
+    private starLabelsContainer = new Pixi.Container()
 
     public constructor(options: GameOptions) {
         this.options = options
@@ -40,14 +42,17 @@ class Game {
         this.shiftManager.release()
     }
 
-    private initStars(): void {
+    private async initStars(): Promise<void> {
         this.pixi.stage.addChild(this.starsContainer)
+        this.pixi.stage.addChild(this.starLabelsContainer)
 
         const blurFilter = new Pixi.filters.BlurFilter(10)
         this.starsContainer.filters = [blurFilter]
 
-        const STARS = 100
+        const STARS = 1000
         const EDGE = 50
+
+        const stars = await Http.get<any[]>('stars', { n: STARS })
 
         const starPoints = getPoints({
             n: STARS,
@@ -58,12 +63,18 @@ class Game {
             minDistance: 250,
         })
 
-        starPoints.forEach(pos => {
-            const star = new Pixi.Graphics()
-            star.beginFill(0xffffff)
-            star.drawCircle(pos.x, pos.y, 15)
-            star.endFill()
-            this.starsContainer.addChild(star)
+        stars.forEach((star: any) => {
+            const g = new Pixi.Graphics()
+            g.beginFill(0xffffff)
+            g.drawCircle(star.x * 200, star.y * 200, 15)
+            g.endFill()
+            this.starsContainer.addChild(g)
+
+            const label = new Pixi.Text(star.name, { fill: 0xAAAAAA, align: 'center', fontFamily: 'Arial', fontSize: 14 })
+            label.x = star.x * 200
+            label.y = star.y * 200 + 30
+            label.anchor.set(0.5, 0.5)
+            this.starLabelsContainer.addChild(label)
         })
     }
 
