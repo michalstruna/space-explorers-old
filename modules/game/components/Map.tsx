@@ -1,4 +1,5 @@
 import React from 'react'
+
 import Game from '../lib/Game'
 import { GameOptions } from '../types'
 
@@ -9,8 +10,8 @@ interface Props extends Partial<Omit<GameOptions, 'container'>> {
 }
 
 const Map: React.FC<Props> = ({ 
-    sizeX = 1920,
-    sizeY = 900
+    sizeX = 5000,
+    sizeY = 4000
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
 
@@ -21,6 +22,10 @@ const Map: React.FC<Props> = ({
             container,
             backgroundColor: 0x212121
         })
+
+        return () => {
+            game.end()
+        }
     }, [])
 
     return (
