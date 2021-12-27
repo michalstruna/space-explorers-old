@@ -49,7 +49,7 @@ class Game {
         const blurFilter = new Pixi.filters.BlurFilter(10)
         this.starsContainer.filters = [blurFilter]
 
-        const STARS = 1000
+        const STARS = 500
         const EDGE = 50
 
         const stars = await Http.get<any[]>('stars', { n: STARS })

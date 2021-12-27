@@ -7,11 +7,11 @@ type StarData = {
     x: number
     y: number
     z: number
-    spectral: string
+    spect: string
     size: string
 }
 
 export default async function(req: NextApiRequest, res: NextApiResponse<StarData[]>) {
     const count = parseInt(req.query.n as string) || Stars.length
-    res.status(200).json(Stars.sort(() => 0.5 - Math.random()).slice(0, count)) // Sort by coord from center.
+    res.status(200).json(Stars.slice(0, count)) // Sort by coord from center.
 }
