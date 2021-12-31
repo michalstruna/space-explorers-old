@@ -10,7 +10,7 @@ interface Props extends Partial<Omit<GameOptions, 'container'>> {
 }
 
 const Map: React.FC<Props> = ({ 
-    nStars = 500
+    nStars = 100
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
 
