@@ -8,6 +8,7 @@ import Interactions from './Interactions'
 import Star from './Star'
 
 const PC_TO_PX = 300
+const PC_TO_MINI_PX = 1
 
 class Game {
 
@@ -15,6 +16,7 @@ class Game {
 
     private interactions: Interactions
     private viewport: Viewport
+    private minimap: Viewport
     
     private starsContainer = new Pixi.Container()
     private starsBlurFilter = new Pixi.filters.BlurFilter()
@@ -25,6 +27,10 @@ class Game {
         return Math.floor(pc * PC_TO_PX)
     }
 
+    public static toMiniPx(pc: number) {
+        return Math.floor(pc * PC_TO_MINI_PX)
+    }
+
     public constructor({ backgroundColor = 0x212121, nStars = 50, container = document.body }: Partial<GameOptions>) {
         this.app = new Pixi.Application({
             resizeTo: window, // TODO: container
@@ -32,12 +38,12 @@ class Game {
         })
 
         container.appendChild(this.app.view)
-
-        this.interactions = this.viewport = null as any
+        this.interactions = this.viewport = this.minimap = null as any
 
         Http.get<StarsArea>('stars', { n: nStars }).then(({ stars, size }) => {
             this.interactions = new Interactions({ app: this.app, sizeX: Game.toPx(size.x), sizeY: Game.toPx(size.y) })
             this.viewport = this.interactions.viewport
+            this.minimap = this.interactions.minimap
             this.initStars(stars)
             this.app.ticker.add(this.tick)
         })
@@ -51,12 +57,11 @@ class Game {
         this.viewport.addChild(this.starsContainer)
         this.viewport.addChild(this.starLabelsContainer)
         this.starsContainer.filters = [this.starsBlurFilter]
-        stars.forEach(star => this.stars[star.id] = new Star({ ...star, container: this.starsContainer, labelContainer: this.starLabelsContainer }))
+        stars.forEach(star => this.stars[star.id] = new Star({ ...star, container: this.starsContainer, minimap: this.minimap, labelContainer: this.starLabelsContainer }))
     }
 
     private tick = (): void => {
         this.starsBlurFilter.blur = (this.viewport.scale?.x || 1) * 10
-        console.log(this.viewport.scale.x)
     }
 
 }

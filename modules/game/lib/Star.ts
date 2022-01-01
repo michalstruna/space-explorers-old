@@ -5,6 +5,7 @@ import Game from './Game'
 
 type StarRenderData = StarData & {
     container: Pixi.Container
+    minimap: Pixi.Container
     labelContainer: Pixi.Container
 }
 
@@ -39,8 +40,10 @@ class Star {
     private width: number
 
     private container: Pixi.Container
+    private minimap: Pixi.Container
     private labelContainer: Pixi.Container
     private g: Pixi.Graphics
+    private miniG: Pixi.Graphics
     private label: Pixi.Text
     
     public constructor(options: StarRenderData) {
@@ -53,25 +56,32 @@ class Star {
         this.width = sizeMap[this.size]
 
         this.container = options.container
+        this.minimap = options.minimap
         this.labelContainer = options.labelContainer
 
         this.g = new Pixi.Graphics()
+        this.miniG = new Pixi.Graphics()
         this.label = new Pixi.Text(this.name)
 
         this.render()
     }
 
     private render() {
-        this.g.beginFill(this.color)
-        this.g.drawCircle(Game.toPx(this.pos.x), Game.toPx(this.pos.y), this.width)
-        this.g.endFill()
-        this.container.addChild(this.g)
+        this.container.addChild(this.draw(this.g))
+        this.minimap.addChild(this.draw(this.miniG, 5))
 
         this.label.x = Game.toPx(this.pos.x)
         this.label.style = { fill: 0xaaaaaa, align: 'center', fontFamily: 'Arial', fontSize: 14 }
         this.label.y = Game.toPx(this.pos.y) + this.width * 3
         this.label.anchor.set(0.5, 0.5)
         this.labelContainer.addChild(this.label)
+    }
+
+    private draw(g: Pixi.Graphics, size = 1) {
+        g.beginFill(this.color)
+        g.drawCircle(Game.toPx(this.pos.x), Game.toPx(this.pos.y), this.width * size)
+        g.endFill()
+        return g
     }
 
 }
