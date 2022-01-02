@@ -42,8 +42,9 @@ class Interactions {
         this._minimap.destroy()
     }
 
-    private handleResize() {
-        this.viewport?.resize(window.innerWidth, window.innerWidth, this.options.sizeX, this.options.sizeY)
+    private handleResize = () => {
+        this.viewport?.resize(window.innerWidth, window.innerHeight, this.options.sizeX, this.options.sizeY)
+        this.updateMinimapView()
     }
 
     private initViewport() {
@@ -99,6 +100,8 @@ class Interactions {
     private updateMinimapView = () => {
         const sizeX = this.viewport.screenWidthInWorldPixels / this.viewport.worldWidth * this.viewport.worldWidth
         const sizeY = this.viewport.screenHeightInWorldPixels / this.viewport.worldHeight * this.viewport.worldHeight
+
+        //console.log(111, this.viewport.screenWidthInWorldPixels, this.viewport.screenHeightInWorldPixels)
 
         this.minimapView.width = sizeX
         this.minimapView.height = sizeY
