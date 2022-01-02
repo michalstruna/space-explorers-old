@@ -44,7 +44,7 @@ class Interactions {
 
     private handleResize = () => {
         this.viewport?.resize(window.innerWidth, window.innerHeight, this.options.sizeX, this.options.sizeY)
-        this.updateMinimapView()
+        this.updateMinimap()
     }
 
     private initViewport() {
@@ -71,16 +71,15 @@ class Interactions {
             screenWidth: MINIMAP_SIZE,
             screenHeight: MINIMAP_SIZE,
             worldWidth: this.options.sizeX,
-            worldHeight: this.options.sizeY
+            worldHeight: this.options.sizeY,
+            stopPropagation: true,
+            noTicker: true
         })
 
         this.minimap.scale.set(MINIMAP_SIZE / this.options.sizeX, MINIMAP_SIZE / this.options.sizeY)
         this.app.stage.addChild(this.minimap)
 
         this.minimapView.alpha = 0.25
-        this.minimapView.width = 1000
-        this.minimapView.height = 1000
-        this.minimapView.position.set(10)
         this.minimapView.tint = 0xFFFFFF
 
         const mapBackground = new Pixi.Sprite(Pixi.Texture.WHITE)
@@ -91,26 +90,24 @@ class Interactions {
         this.minimap.addChild(mapBackground)
         this.minimap.addChild(this.minimapView)
 
-        this.viewport.on('moved', this.updateMinimapView)
-        this.viewport.on('zoomed', this.updateMinimapView)
-
+        this.viewport.on('moved', this.updateMinimap)
+        this.viewport.on('zoomed', this.updateMinimap)
         this.minimap.on('clicked', this.onClickMinimap)
     }
 
-    private updateMinimapView = () => {
+    private updateMinimap = () => {
         const sizeX = this.viewport.screenWidthInWorldPixels / this.viewport.worldWidth * this.viewport.worldWidth
         const sizeY = this.viewport.screenHeightInWorldPixels / this.viewport.worldHeight * this.viewport.worldHeight
-
-        //console.log(111, this.viewport.screenWidthInWorldPixels, this.viewport.screenHeightInWorldPixels)
 
         this.minimapView.width = sizeX
         this.minimapView.height = sizeY
         this.minimapView.position.set(this.viewport.corner.x, this.viewport.corner.y)
+        this.minimap.position.set(this.viewport.screenWidth - MINIMAP_SIZE, 0)
     }
 
     private onClickMinimap = ({ world }: any) => {
         this.viewport.moveCenter(world.x, world.y)
-        this.updateMinimapView()
+        this.updateMinimap()
     }
 
 }

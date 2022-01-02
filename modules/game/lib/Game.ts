@@ -62,7 +62,6 @@ class Game {
 
     private tick = (): void => {
         this.starsBlurFilter.blur = (this.viewport.scale?.x || 1) * 10
-        console.log(111, this.viewport.width, this.viewport.height)
     }
 
 }
