@@ -42,8 +42,8 @@ class Game {
 
         Http.get<StarsArea>('stars', { n: nStars }).then(({ stars, size }) => {
             this.interactions = new Interactions({ app: this.app, sizeX: Game.toPx(size.x), sizeY: Game.toPx(size.y) })
-            this.viewport = this.interactions.viewport
-            this.minimap = this.interactions.minimap
+            this.viewport = this.interactions.map.viewport
+            this.minimap = this.interactions.minimap.viewport
             this.initStars(stars)
             this.app.ticker.add(this.tick)
         })
@@ -54,6 +54,9 @@ class Game {
     }
 
     private async initStars(stars: StarData[]): Promise<void> {
+        const bg = new Pixi.Sprite(Pixi.Texture.WHITE)
+        bg
+
         this.viewport.addChild(this.starsContainer)
         this.viewport.addChild(this.starLabelsContainer)
         this.starsContainer.filters = [this.starsBlurFilter]
