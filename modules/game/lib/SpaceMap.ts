@@ -16,7 +16,7 @@ type MapOptions = {
     onUpdate?: () => void
 }
 
-class Map {
+class SpaceMap {
 
     private _viewport: Viewport
     private screenSize: Pixi.Point | (() => Pixi.Point)
@@ -83,6 +83,7 @@ class Map {
         this.handleUpdate = onUpdate
         container.addChild(this.viewport)
         this.update()
+        this.viewport.fitWorld()
     }
 
     public get viewport() {
@@ -125,4 +126,4 @@ class Map {
 
 }
 
-export default Map
+export default SpaceMap

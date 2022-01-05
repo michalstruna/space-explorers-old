@@ -1,13 +1,6 @@
 import * as Pixi from 'pixi.js'
-
-import { StarData } from '../types'
+import { Point, Renderable, StarData } from '../types'
 import Game from './Game'
-
-type StarRenderData = StarData & {
-    container: Pixi.Container
-    minimap: Pixi.Container
-    labelContainer: Pixi.Container
-}
 
 const colorMap: Record<string, number> = {
     O: 0x059EFF,
@@ -28,60 +21,56 @@ const sizeMap: Record<string, number> = {
     V: 8
 }
 
-class Star {
+class Star implements Renderable {
 
     private id: number
     private name: string
-    private size: string
-    private spect: string
-    private pos: Pixi.Point
+    private harvard: string
+    private yerkes: string
+    private position: Point
 
+    private size: number
     private color: number
-    private width: number
 
-    private container: Pixi.Container
-    private minimap: Pixi.Container
-    private labelContainer: Pixi.Container
-    private g: Pixi.Graphics
-    private miniG: Pixi.Graphics
+    private graphics: Pixi.Graphics
+    private miniGraphics: Pixi.Graphics
     private label: Pixi.Text
-    
-    public constructor(options: StarRenderData) {
+
+    public constructor(options: StarData) {
         this.id = options.id
         this.name = options.name
-        this.size = options.size
-        this.spect = options.spect
-        this.pos = new Pixi.Point(options.x, options.y)
-        this.color = colorMap[this.spect[0]]
-        this.width = sizeMap[this.size]
+        this.yerkes = options.yerkes
+        this.harvard = options.harvard
+        this.position = options.position
 
-        this.container = options.container
-        this.minimap = options.minimap
-        this.labelContainer = options.labelContainer
+        this.color = colorMap[this.harvard[0]]
+        this.size = sizeMap[this.yerkes]
 
-        this.g = new Pixi.Graphics()
-        this.miniG = new Pixi.Graphics()
+        this.graphics = new Pixi.Graphics()
+        this.miniGraphics = new Pixi.Graphics()
         this.label = new Pixi.Text(this.name)
+    } 
 
-        this.render()
+    public render(): Pixi.DisplayObject {
+        this.graphics.beginFill(this.color)
+        this.graphics.drawCircle(Game.toPx(this.position.x), Game.toPx(this.position.y), this.size)
+        this.graphics.endFill()
+        return this.graphics
     }
 
-    private render() {
-        this.container.addChild(this.draw(this.g))
-        this.minimap.addChild(this.draw(this.miniG, 5))
+    public renderMini(): Pixi.DisplayObject {
+        this.miniGraphics.beginFill(this.color)
+        this.miniGraphics.drawCircle(Game.toPx(this.position.x), Game.toPx(this.position.y), this.size * 5)
+        this.miniGraphics.endFill()
+        return this.miniGraphics
+    }
 
-        this.label.x = Game.toPx(this.pos.x)
+    public renderLabel(): Pixi.Text {
+        this.label.x = Game.toPx(this.position.x)
         this.label.style = { fill: 0xaaaaaa, align: 'center', fontFamily: 'Arial', fontSize: 14 }
-        this.label.y = Game.toPx(this.pos.y) + this.width * 3
+        this.label.y = Game.toPx(this.position.y) + this.size * 3
         this.label.anchor.set(0.5, 0.5)
-        this.labelContainer.addChild(this.label)
-    }
-
-    private draw(g: Pixi.Graphics, size = 1) {
-        g.beginFill(this.color)
-        g.drawCircle(Game.toPx(this.pos.x), Game.toPx(this.pos.y), this.width * size)
-        g.endFill()
-        return g
+        return this.label
     }
 
 }
