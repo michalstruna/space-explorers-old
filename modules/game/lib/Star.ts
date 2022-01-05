@@ -73,6 +73,10 @@ class Star implements Renderable {
         return this.label
     }
 
+    public get visibility() {
+        return Game.toPx(10)
+    }
+
 }
 
 export default Star

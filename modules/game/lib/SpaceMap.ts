@@ -1,6 +1,7 @@
 import * as Pixi from 'pixi.js'
 
 import { Viewport } from 'pixi-viewport'
+import { Renderable } from '../types'
 
 type MapUpdateHandler = () => void
 
@@ -10,8 +11,7 @@ type MapOptions = {
     container: Pixi.Container
     interaction: Pixi.InteractionManager
 
-    projectView?: Viewport
-    ticker?: boolean
+    project?: SpaceMap
     backgroundColor?: number
     onUpdate?: () => void
 }
@@ -21,48 +21,52 @@ class SpaceMap {
     private _viewport: Viewport
     private screenSize: Pixi.Point | (() => Pixi.Point)
     private handleUpdate: MapUpdateHandler
-    private background?: Pixi.Sprite
-    private projectView?: Viewport
-    private projection?: Pixi.Sprite
+    private project?: SpaceMap
+    private visibilityMask = new Pixi.Graphics()
+
+    private background = new Pixi.Sprite(Pixi.Texture.WHITE)
+    private foreground = new Pixi.Container()
+    private mainView = new Pixi.Container()
+    private labelView = new Pixi.Container()
+    private projection = new Pixi.Sprite(Pixi.Texture.WHITE)
 
     public constructor({
         screenSize,
         worldSize,
         container,
         interaction,
-        projectView,
-        ticker,
+        project,
         backgroundColor,
         onUpdate = () => { }
     }: MapOptions) {
         const size = screenSize instanceof Pixi.Point ? screenSize : screenSize()
         this.screenSize = screenSize
-        this.projectView = projectView
+        this.project = project
 
         this._viewport = new Viewport({
             screenWidth: size.x,
             screenHeight: size.y,
             worldWidth: worldSize.x,
             worldHeight: worldSize.y,
-            noTicker: !ticker,
+            noTicker: !!project,
             stopPropagation: true,
             interaction: interaction
         })
 
         if (backgroundColor !== undefined) {
-            this.background = new Pixi.Sprite(Pixi.Texture.WHITE)
-            this.background.tint = backgroundColor || 0
             this.viewport.addChild(this.background)
+            this.background.tint = backgroundColor
         }
 
-        if (projectView) {
-            this.projection = new Pixi.Sprite(Pixi.Texture.WHITE)
+        this.viewport.addChild(this.foreground)
+        this.foreground.addChild(this.mainView)
+        this.foreground.addChild(this.labelView)
+
+        if (project) {
             this.viewport.scale.set(size.x / worldSize.x, size.y / worldSize.y)
             this.viewport.addChild(this.projection)
-
             this.projection.alpha = 0.25
             this.projection.tint = 0xFFFFFF
-
             this.viewport.on('clicked', this.handleProjectClick)
         } else {
             this._viewport = this.viewport.drag().pinch().wheel().decelerate().clamp({
@@ -75,9 +79,11 @@ class SpaceMap {
             })
         }
 
-        const updater = projectView ? projectView : this.viewport
-        updater.on('moved', this.update)
-        updater.on('zoomed', this.update)
+        this.foreground.mask = this.visibilityMask
+
+        const updater = project ? project : this
+        updater.viewport.on('moved', this.update)
+        updater.viewport.on('zoomed', this.update)
         window.addEventListener('resize', this.update)
 
         this.handleUpdate = onUpdate
@@ -101,26 +107,28 @@ class SpaceMap {
             this.viewport?.resize(size.x, size.y)
         }
 
-        if (this.projection && this.projectView) {
-            const sizeX = this.projectView.screenWidthInWorldPixels / this.projectView.worldWidth * this.projectView.worldWidth
-            const sizeY = this.projectView.screenHeightInWorldPixels / this.projectView.worldHeight * this.projectView.worldHeight
+        if (this.projection && this.project) {
+            const sizeX = this.project.viewport.screenWidthInWorldPixels / this.project.viewport.worldWidth * this.project.viewport.worldWidth
+            const sizeY = this.project.viewport.screenHeightInWorldPixels / this.project.viewport.worldHeight * this.project.viewport.worldHeight
     
             this.projection.width = sizeX
             this.projection.height = sizeY
-            this.projection.position.set(this.projectView.corner.x, this.projectView.corner.y)
-            this.viewport.position.set(this.projectView.screenWidth - this.viewport.screenWidth, 0)
+            this.projection.position.set(this.project.viewport.corner.x, this.project.viewport.corner.y)
+            this.viewport.position.set(this.project.viewport.screenWidth - this.viewport.screenWidth, 0)
         }
 
-        if (this.background) {
-            this.background.width = this.viewport.worldWidth
-            this.background.height = this.viewport.worldHeight
-        }
+        this.background.width = this.mainView.width = this.labelView.width = this.viewport.worldWidth
+        this.background.height = this.mainView.height = this.labelView.height = this.viewport.worldHeight
 
         this.handleUpdate()
     }
 
+    public render(obj: Renderable) {
+
+    }
+
     private handleProjectClick = ({ world }: { world: Pixi.Point }) => {
-        this.projectView?.moveCenter(world.x, world.y)
+        this.project!.viewport.moveCenter(world.x, world.y)
         this.update()
     }
 

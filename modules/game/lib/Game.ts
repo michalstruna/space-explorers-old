@@ -51,8 +51,7 @@ class Game {
                 container: this.app.stage,
                 screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
-                interaction: this.app.renderer.plugins.interaction,
-                ticker: true
+                interaction: this.app.renderer.plugins.interaction
             })
     
             this.minimap = new SpaceMap({
@@ -60,7 +59,7 @@ class Game {
                 screenSize: new Pixi.Point(MINIMAP_SIZE, MINIMAP_SIZE),
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
                 interaction: this.app.renderer.plugins.interaction,
-                projectView: this.map.viewport,
+                project: this.map,
                 backgroundColor: 0x000000
             })
 
