@@ -62,6 +62,8 @@ class Map {
 
             this.projection.alpha = 0.25
             this.projection.tint = 0xFFFFFF
+
+            this.viewport.on('clicked', this.handleProjectClick)
         } else {
             this._viewport = this.viewport.drag().pinch().wheel().decelerate().clamp({
                 direction: 'all',
@@ -71,13 +73,12 @@ class Map {
                 maxHeight: worldSize.y,
                 minHeight: 200
             })
-
-            window.addEventListener('resize', this.update)
         }
 
         const updater = projectView ? projectView : this.viewport
         updater.on('moved', this.update)
         updater.on('zoomed', this.update)
+        window.addEventListener('resize', this.update)
 
         this.handleUpdate = onUpdate
         container.addChild(this.viewport)
@@ -115,6 +116,11 @@ class Map {
         }
 
         this.handleUpdate()
+    }
+
+    private handleProjectClick = ({ world }: { world: Pixi.Point }) => {
+        this.projectView?.moveCenter(world.x, world.y)
+        this.update()
     }
 
 }

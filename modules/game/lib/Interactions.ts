@@ -26,7 +26,8 @@ class Interactions {
             container: this.app.stage,
             screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
             worldSize: new Pixi.Point(options.sizeX, options.sizeY),
-            interaction: this.app.renderer.plugins.interaction
+            interaction: this.app.renderer.plugins.interaction,
+            ticker: true
         })
 
         this._minimap = new Map({
