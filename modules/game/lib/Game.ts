@@ -6,9 +6,8 @@ import ShiftManager from '../../native/lib/ShiftManager'
 import { GameOptions, StarData, StarsArea } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'
+import { pcToPx } from './Converter'
 
-const PC_TO_PX = 300
-const PC_TO_MINI_PX = 1
 const MINIMAP_SIZE = 300
 
 class Game {
@@ -18,14 +17,6 @@ class Game {
     private minimap: SpaceMap
     
     private stars: Map<number, Star> = new Map()
-
-    public static toPx(pc: number) {
-        return Math.floor(pc * PC_TO_PX)
-    }
-
-    public static toMiniPx(pc: number) {
-        return Math.floor(pc * PC_TO_MINI_PX)
-    }
 
     public constructor({
         backgroundColor = 0x212121,
@@ -41,14 +32,14 @@ class Game {
         this.map = this.minimap = null as any
 
         Http.get<StarsArea>('stars', { n: nStars }).then(({ stars, size }) => {
-            const pxSize = { x: Game.toPx(size.x), y: Game.toPx(size.y) }
+            const pxSize = { x: pcToPx(size.x), y: pcToPx(size.y) }
 
             this.map = new SpaceMap({
                 container: this.app.stage,
                 screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
                 interaction: this.app.renderer.plugins.interaction,
-                backgroundColor: 0x222222,
+                backgroundColor: 0x151515,
                 visibilityColor: 0x000000
             })
     
@@ -58,12 +49,10 @@ class Game {
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
                 interaction: this.app.renderer.plugins.interaction,
                 project: this.map,
-                backgroundColor: 0x222222,
                 visibilityColor: 0x000000
             })
 
             this.initStars(stars)
-            this.app.ticker.add(this.tick)
         })
     }
 
@@ -73,18 +62,12 @@ class Game {
     }
 
     private async initStars(stars: StarData[]): Promise<void> {
-        //this.starsContainer.filters = [this.starsBlurFilter]
-        
         for (const star of stars) {
             const tmp = new Star(star)
             this.map.render(tmp)
             this.minimap.render(tmp)
             this.stars.set(star.id, tmp)
         }
-    }
-
-    private tick = (): void => {
-        //this.starsBlurFilter.blur = (this.map.viewport.scale?.x || 1) * 10
     }
 
 }

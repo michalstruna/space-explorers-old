@@ -1,6 +1,6 @@
 import * as Pixi from 'pixi.js'
 import { Point, Renderable, StarData } from '../types'
-import Game from './Game'
+import { pcToPx } from './Converter'
 
 const colorMap: Record<string, number> = {
     O: 0x059EFF,
@@ -53,28 +53,28 @@ class Star implements Renderable {
 
     public render(): Pixi.DisplayObject {
         this.graphics.beginFill(this.color)
-        this.graphics.drawCircle(Game.toPx(this._position.x), Game.toPx(this._position.y), this.size)
+        this.graphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size)
         this.graphics.endFill()
         return this.graphics
     }
 
     public renderMini(): Pixi.DisplayObject {
         this.miniGraphics.beginFill(this.color)
-        this.miniGraphics.drawCircle(Game.toPx(this._position.x), Game.toPx(this._position.y), this.size * 5)
+        this.miniGraphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size * 5)
         this.miniGraphics.endFill()
         return this.miniGraphics
     }
 
     public renderLabel(): Pixi.Text {
-        this.label.x = Game.toPx(this._position.x)
+        this.label.x = pcToPx(this._position.x)
         this.label.style = { fill: 0xaaaaaa, align: 'center', fontFamily: 'Arial', fontSize: 14 }
-        this.label.y = Game.toPx(this._position.y) + this.size * 3
+        this.label.y = pcToPx(this._position.y) + this.size * 3
         this.label.anchor.set(0.5, 0.5)
         return this.label
     }
 
     public get visibility() {
-        return Game.toPx(2)
+        return pcToPx(1)
     }
 
     public get position() {

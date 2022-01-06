@@ -2,10 +2,7 @@ import * as Pixi from 'pixi.js'
 
 import { Viewport } from 'pixi-viewport'
 import { Renderable } from '../types'
-import { DisplayObject } from 'pixi.js'
-import Game from './Game'
-
-type MapUpdateHandler = () => void
+import { pcToPx } from './Converter'
 
 type MapOptions = {
     screenSize: Pixi.Point | (() => Pixi.Point)
@@ -23,7 +20,7 @@ class SpaceMap {
 
     private _viewport: Viewport
     private screenSize: Pixi.Point | (() => Pixi.Point)
-    private handleUpdate: MapUpdateHandler
+    private handleUpdate: () => void
     private project?: SpaceMap
 
     private visibility = new Pixi.Sprite(Pixi.Texture.WHITE)
@@ -34,9 +31,7 @@ class SpaceMap {
     private projection = new Pixi.Sprite(Pixi.Texture.WHITE)
 
     private blur = new Pixi.filters.BlurFilter()
-    
     private visibilityMask = new Pixi.Graphics()
-    private visibilityBlur = new Pixi.filters.BlurFilter(100)
 
 
     public constructor({
@@ -61,11 +56,11 @@ class SpaceMap {
             noTicker: !!project,
             stopPropagation: true,
             interaction: interaction
-        })
+        })  
 
         if (backgroundColor !== undefined) {
-            this.mainView.addChild(this.background)
-            this.background.tint = backgroundColor
+            this.background = Pixi.Sprite.from('./background.jpg')
+            this.foreground.addChild(this.background)
         }
 
         if (visibilityColor !== undefined) {
@@ -96,9 +91,10 @@ class SpaceMap {
             this.mainView.filters = [this.blur]
         }
 
-        this.mainView.mask = this.visibilityMask
-        this.labelView.mask = this.visibilityMask
-        this.foreground.addChild(this.visibilityMask)
+        //this.mainView.mask = this.visibilityMask
+        //this.labelView.mask = this.visibilityMask
+        //this.background.mask = this.visibilityMask
+        //this.foreground.addChild(this.visibilityMask)
         this.mainView.filters = [this.blur]
 
         const updater = project ? project : this
@@ -141,6 +137,8 @@ class SpaceMap {
         this.visibility.height = this.background.height = this.viewport.worldHeight
         this.blur.blur = (this.viewport.scale?.x || 1) * 10
 
+        this.background.position.set(this.foreground.position.x, this.foreground.position.y)
+
         this.handleUpdate()
     }
 
@@ -154,7 +152,7 @@ class SpaceMap {
 
         const visibility = new Pixi.Graphics()
         visibility.beginFill(0xFFFFFF)
-        visibility.drawCircle(Game.toPx(obj.position.x), Game.toPx(obj.position.y), obj.visibility)
+        visibility.drawCircle(pcToPx(obj.position.x), pcToPx(obj.position.y), obj.visibility)
         visibility.endFill()
         this.visibilityMask.addChild(visibility)
     }
