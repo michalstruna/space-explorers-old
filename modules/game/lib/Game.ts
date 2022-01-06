@@ -19,7 +19,7 @@ class Game {
     private stars: Map<number, Star> = new Map()
 
     public constructor({
-        backgroundColor = 0x212121,
+        backgroundColor = 0x000000,
         nStars = 50,
         container = document.body
     }: GameOptions) {
@@ -39,8 +39,8 @@ class Game {
                 screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
                 interaction: this.app.renderer.plugins.interaction,
-                backgroundColor: 0x151515,
-                visibilityColor: 0x000000
+                background: 'background.jpg',
+                backgroundColor: 0x000000
             })
     
             this.minimap = new SpaceMap({
@@ -49,7 +49,8 @@ class Game {
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
                 interaction: this.app.renderer.plugins.interaction,
                 project: this.map,
-                visibilityColor: 0x000000
+                background: 'background.jpg',
+                backgroundColor: 0x000000
             })
 
             this.initStars(stars)
