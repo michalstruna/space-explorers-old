@@ -33,4 +33,5 @@ export interface Renderable {
     renderMini(): Pixi.DisplayObject
     renderLabel(): Pixi.Text
     get visibility(): number
+    get position(): Point
 }

@@ -17,10 +17,6 @@ class Game {
     private map: SpaceMap
     private minimap: SpaceMap
     
-    private starsContainer = new Pixi.Container()
-    private starsBlurFilter = new Pixi.filters.BlurFilter()
-    private starLabelsContainer = new Pixi.Container()
-    
     private stars: Map<number, Star> = new Map()
 
     public static toPx(pc: number) {
@@ -51,7 +47,9 @@ class Game {
                 container: this.app.stage,
                 screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
-                interaction: this.app.renderer.plugins.interaction
+                interaction: this.app.renderer.plugins.interaction,
+                backgroundColor: 0x222222,
+                visibilityColor: 0x000000
             })
     
             this.minimap = new SpaceMap({
@@ -60,7 +58,8 @@ class Game {
                 worldSize: new Pixi.Point(pxSize.x, pxSize.y),
                 interaction: this.app.renderer.plugins.interaction,
                 project: this.map,
-                backgroundColor: 0x000000
+                backgroundColor: 0x222222,
+                visibilityColor: 0x000000
             })
 
             this.initStars(stars)
@@ -74,21 +73,18 @@ class Game {
     }
 
     private async initStars(stars: StarData[]): Promise<void> {
-        this.map.viewport.addChild(this.starsContainer)
-        this.map.viewport.addChild(this.starLabelsContainer)
-        this.starsContainer.filters = [this.starsBlurFilter]
+        //this.starsContainer.filters = [this.starsBlurFilter]
         
         for (const star of stars) {
             const tmp = new Star(star)
-            this.starsContainer.addChild(tmp.render())
-            this.minimap.viewport.addChild(tmp.renderMini())
-            this.starLabelsContainer.addChild(tmp.renderLabel())
+            this.map.render(tmp)
+            this.minimap.render(tmp)
             this.stars.set(star.id, tmp)
         }
     }
 
     private tick = (): void => {
-        this.starsBlurFilter.blur = (this.map.viewport.scale?.x || 1) * 10
+        //this.starsBlurFilter.blur = (this.map.viewport.scale?.x || 1) * 10
     }
 
 }

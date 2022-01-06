@@ -27,7 +27,7 @@ class Star implements Renderable {
     private name: string
     private harvard: string
     private yerkes: string
-    private position: Point
+    private _position: Point
 
     private size: number
     private color: number
@@ -41,7 +41,7 @@ class Star implements Renderable {
         this.name = options.name
         this.yerkes = options.yerkes
         this.harvard = options.harvard
-        this.position = options.position
+        this._position = options.position
 
         this.color = colorMap[this.harvard[0]]
         this.size = sizeMap[this.yerkes]
@@ -53,28 +53,32 @@ class Star implements Renderable {
 
     public render(): Pixi.DisplayObject {
         this.graphics.beginFill(this.color)
-        this.graphics.drawCircle(Game.toPx(this.position.x), Game.toPx(this.position.y), this.size)
+        this.graphics.drawCircle(Game.toPx(this._position.x), Game.toPx(this._position.y), this.size)
         this.graphics.endFill()
         return this.graphics
     }
 
     public renderMini(): Pixi.DisplayObject {
         this.miniGraphics.beginFill(this.color)
-        this.miniGraphics.drawCircle(Game.toPx(this.position.x), Game.toPx(this.position.y), this.size * 5)
+        this.miniGraphics.drawCircle(Game.toPx(this._position.x), Game.toPx(this._position.y), this.size * 5)
         this.miniGraphics.endFill()
         return this.miniGraphics
     }
 
     public renderLabel(): Pixi.Text {
-        this.label.x = Game.toPx(this.position.x)
+        this.label.x = Game.toPx(this._position.x)
         this.label.style = { fill: 0xaaaaaa, align: 'center', fontFamily: 'Arial', fontSize: 14 }
-        this.label.y = Game.toPx(this.position.y) + this.size * 3
+        this.label.y = Game.toPx(this._position.y) + this.size * 3
         this.label.anchor.set(0.5, 0.5)
         return this.label
     }
 
     public get visibility() {
-        return Game.toPx(10)
+        return Game.toPx(2)
+    }
+
+    public get position() {
+        return this._position
     }
 
 }

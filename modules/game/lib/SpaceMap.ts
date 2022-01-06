@@ -2,6 +2,8 @@ import * as Pixi from 'pixi.js'
 
 import { Viewport } from 'pixi-viewport'
 import { Renderable } from '../types'
+import { DisplayObject } from 'pixi.js'
+import Game from './Game'
 
 type MapUpdateHandler = () => void
 
@@ -13,6 +15,7 @@ type MapOptions = {
 
     project?: SpaceMap
     backgroundColor?: number
+    visibilityColor?: number
     onUpdate?: () => void
 }
 
@@ -22,13 +25,19 @@ class SpaceMap {
     private screenSize: Pixi.Point | (() => Pixi.Point)
     private handleUpdate: MapUpdateHandler
     private project?: SpaceMap
-    private visibilityMask = new Pixi.Graphics()
 
-    private background = new Pixi.Sprite(Pixi.Texture.WHITE)
+    private visibility = new Pixi.Sprite(Pixi.Texture.WHITE)
     private foreground = new Pixi.Container()
     private mainView = new Pixi.Container()
+    private background = new Pixi.Sprite(Pixi.Texture.WHITE)
     private labelView = new Pixi.Container()
     private projection = new Pixi.Sprite(Pixi.Texture.WHITE)
+
+    private blur = new Pixi.filters.BlurFilter()
+    
+    private visibilityMask = new Pixi.Graphics()
+    private visibilityBlur = new Pixi.filters.BlurFilter(100)
+
 
     public constructor({
         screenSize,
@@ -37,6 +46,7 @@ class SpaceMap {
         interaction,
         project,
         backgroundColor,
+        visibilityColor,
         onUpdate = () => { }
     }: MapOptions) {
         const size = screenSize instanceof Pixi.Point ? screenSize : screenSize()
@@ -54,8 +64,13 @@ class SpaceMap {
         })
 
         if (backgroundColor !== undefined) {
-            this.viewport.addChild(this.background)
+            this.mainView.addChild(this.background)
             this.background.tint = backgroundColor
+        }
+
+        if (visibilityColor !== undefined) {
+            this.viewport.addChild(this.visibility)
+            this.visibility.tint = visibilityColor
         }
 
         this.viewport.addChild(this.foreground)
@@ -65,7 +80,7 @@ class SpaceMap {
         if (project) {
             this.viewport.scale.set(size.x / worldSize.x, size.y / worldSize.y)
             this.viewport.addChild(this.projection)
-            this.projection.alpha = 0.25
+            this.projection.alpha = 0.15
             this.projection.tint = 0xFFFFFF
             this.viewport.on('clicked', this.handleProjectClick)
         } else {
@@ -77,9 +92,14 @@ class SpaceMap {
                 maxHeight: worldSize.y,
                 minHeight: 200
             })
+
+            this.mainView.filters = [this.blur]
         }
 
-        this.foreground.mask = this.visibilityMask
+        this.mainView.mask = this.visibilityMask
+        this.labelView.mask = this.visibilityMask
+        this.foreground.addChild(this.visibilityMask)
+        this.mainView.filters = [this.blur]
 
         const updater = project ? project : this
         updater.viewport.on('moved', this.update)
@@ -117,14 +137,26 @@ class SpaceMap {
             this.viewport.position.set(this.project.viewport.screenWidth - this.viewport.screenWidth, 0)
         }
 
-        this.background.width = this.mainView.width = this.labelView.width = this.viewport.worldWidth
-        this.background.height = this.mainView.height = this.labelView.height = this.viewport.worldHeight
+        this.visibility.width = this.background.width = this.viewport.worldWidth
+        this.visibility.height = this.background.height = this.viewport.worldHeight
+        this.blur.blur = (this.viewport.scale?.x || 1) * 10
 
         this.handleUpdate()
     }
 
     public render(obj: Renderable) {
+        if (this.project) {
+            this.mainView.addChild(obj.renderMini())
+        } else {
+            this.mainView.addChild(obj.render())
+            this.labelView.addChild(obj.renderLabel())
+        }
 
+        const visibility = new Pixi.Graphics()
+        visibility.beginFill(0xFFFFFF)
+        visibility.drawCircle(Game.toPx(obj.position.x), Game.toPx(obj.position.y), obj.visibility)
+        visibility.endFill()
+        this.visibilityMask.addChild(visibility)
     }
 
     private handleProjectClick = ({ world }: { world: Pixi.Point }) => {
