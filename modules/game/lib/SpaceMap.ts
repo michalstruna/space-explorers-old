@@ -31,7 +31,7 @@ class SpaceMap {
     private projection = new Pixi.Sprite(Pixi.Texture.WHITE)
 
     private background = new Pixi.Sprite(Pixi.Texture.WHITE)
-    private backgroundBlur = new Pixi.filters.BlurFilter()
+    private backgroundBlur = new Pixi.filters.BlurFilter(0)
 
     private blur = new Pixi.filters.BlurFilter()
     private visibilityMask = new Pixi.Graphics()
@@ -47,13 +47,11 @@ class SpaceMap {
         backgroundColor,
         onUpdate = () => { }
     }: MapOptions) {
-        const size = screenSize instanceof Pixi.Point ? screenSize : screenSize()
         this.screenSize = screenSize
         this.project = project
-
         container.addChild(this.root)
         this.root.tint = backgroundColor || 0x000000
-
+        const size = screenSize instanceof Pixi.Point ? screenSize : screenSize()
 
         this._viewport = new Viewport({
             screenWidth: size.x,
@@ -76,7 +74,8 @@ class SpaceMap {
         this.foreground.addChild(this.labelView)
 
         if (project) {
-            this.viewport.scale.set(size.x / worldSize.x, size.y / worldSize.y)
+            //this.root.scale.set(size.x / worldSize.x, size.y / worldSize.y)
+            this.viewport.resize(size.x, size.y)
             this.viewport.addChild(this.projection)
             this.projection.alpha = 0.15
             this.projection.tint = 0xFFFFFF
@@ -90,14 +89,12 @@ class SpaceMap {
                 maxHeight: worldSize.y,
                 minHeight: 200
             })
-
-            this.mainView.filters = [this.blur]
         }
 
-        this.mainView.mask = this.visibilityMask
-        this.labelView.mask = this.visibilityMask
-        this.background.mask = this.visibilityMask
-        this.viewport.addChild(this.visibilityMask)
+        //this.mainView.mask = this.visibilityMask
+        //this.labelView.mask = this.visibilityMask
+        //this.background.mask = this.visibilityMask
+        //this.viewport.addChild(this.visibilityMask)
         this.mainView.filters = [this.blur]
 
         const updater = project ? project : this
@@ -107,8 +104,8 @@ class SpaceMap {
 
         this.handleUpdate = onUpdate
         this.root.addChild(this.viewport)
-        this.update()
         this.viewport.fitWorld()
+        this.update()
     }
 
     public get viewport() {
@@ -134,18 +131,20 @@ class SpaceMap {
             this.projection.height = sizeY
             this.projection.position.set(this.project.viewport.corner.x, this.project.viewport.corner.y)
             this.root.position.set(this.project.viewport.screenWidth - this.viewport.screenWidth, 0)
+
+            this.background.width = this.background.height = this.viewport.screenWidth
+            //this.background.height = this.viewport.screenHeight
+        } else {
+            this.background.width = this.background.height = this.viewport.screenWidth * 1.5
+            //this.background.height = this.viewport.screenHeight * 1.5
+            this.background.position.set(-this.viewport.center.x / 20, -this.viewport.center.y / 20)
+            this.backgroundBlur.blur = this.viewport.scale.x * 5
         }
 
         this.visibility.width = this.viewport.worldWidth
         this.visibility.height = this.viewport.worldHeight
 
-        this.background.width = this.viewport.screenWidth * 1.1
-        this.background.height = this.viewport.screenHeight * 1.1
-
         this.blur.blur = (this.viewport.scale?.x || 1) * 10
-
-        this.background.position.set(-this.viewport.center.x / 20, -this.viewport.center.y / 20)
-        this.backgroundBlur.blur = this.viewport.scale.x * 5
 
         this.handleUpdate()
     }
