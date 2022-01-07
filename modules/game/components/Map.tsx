@@ -10,21 +10,18 @@ interface Props extends Partial<Omit<GameOptions, 'container'>> {
 }
 
 const Map: React.FC<Props> = ({ 
-    sizeX = 5000,
-    sizeY = 4000
+    nStars = 100
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
 
     React.useEffect(() => {
         const game = new Game({
-            sizeX,
-            sizeY,
-            container,
-            backgroundColor: 0x212121
+            nStars,
+            container: container.current!
         })
 
         return () => {
-            game.end()
+            game.release()
         }
     }, [])
 

@@ -1,81 +1,75 @@
 import * as Pixi from 'pixi.js'
+import { Viewport } from 'pixi-viewport'
+
 import Http from '../../async/lib/Http'
 import ShiftManager from '../../native/lib/ShiftManager'
+import { GameOptions, StarData, StarsArea } from '../types'
+import Star from './Star'
+import SpaceMap from './SpaceMap'
+import { pcToPx } from './Converter'
 
-import { GameOptions } from '../types'
-import { getPoints } from './Generator'
+const MINIMAP_SIZE = 300
 
 class Game {
 
-    private options: GameOptions
-    private pixi: Pixi.Application
-    private shiftManager: ShiftManager
+    private app: Pixi.Application
+    private map: SpaceMap
+    private minimap: SpaceMap
     
-    private starsContainer = new Pixi.Container()
-    private starLabelsContainer = new Pixi.Container()
+    private stars: Map<number, Star> = new Map()
 
-    public constructor(options: GameOptions) {
-        this.options = options
-
-        this.pixi = new Pixi.Application({
-            resizeTo: window,
-            backgroundColor: options.backgroundColor
-        })
-        options.container.current?.appendChild(this.pixi.view)
-
-        this.shiftManager = new ShiftManager({
-            keyboard: { speed: 10 },
-            dragAndDrop: { treshold: 10 },
-            resize: true,
-            onX: change => this.pixi.stage.x = Math.max(-this.options.sizeX + window.innerWidth, Math.min(0, this.pixi.stage.x - change)),
-            onY: change => this.pixi.stage.y = Math.max(-this.options.sizeY + window.innerHeight, Math.min(0, this.pixi.stage.y - change)),
+    public constructor({
+        backgroundColor = 0x000000,
+        nStars = 50,
+        container = document.body
+    }: GameOptions) {
+        this.app = new Pixi.Application({
+            resizeTo: window, // TODO: container
+            backgroundColor: backgroundColor
         })
 
-        this.initStars()
+        container.appendChild(this.app.view)
+        this.map = this.minimap = null as any
 
-        this.pixi.ticker.add(() => {
+        Http.get<StarsArea>('stars', { n: nStars }).then(({ stars, size }) => {
+            const pxSize = { x: pcToPx(size.x), y: pcToPx(size.y) }
+            const bg = `backgrounds/2.jpg`
 
+            this.map = new SpaceMap({
+                container: this.app.stage,
+                screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
+                worldSize: new Pixi.Point(pxSize.x, pxSize.y),
+                interaction: this.app.renderer.plugins.interaction,
+                background: bg,
+                backgroundColor: 0x000000
+            })
+    
+            this.minimap = new SpaceMap({
+                container: this.app.stage,
+                screenSize: new Pixi.Point(MINIMAP_SIZE, MINIMAP_SIZE),
+                worldSize: new Pixi.Point(pxSize.x, pxSize.y),
+                interaction: this.app.renderer.plugins.interaction,
+                project: this.map,
+                background: bg,
+                backgroundColor: 0x000000
+            })
+
+            this.initStars(stars)
         })
     }
 
-    public end(): void {
-        this.shiftManager.release()
+    public release(): void {
+        this.map.release()
+        this.minimap.release()
     }
 
-    private async initStars(): Promise<void> {
-        this.pixi.stage.addChild(this.starsContainer)
-        this.pixi.stage.addChild(this.starLabelsContainer)
-
-        const blurFilter = new Pixi.filters.BlurFilter(10)
-        this.starsContainer.filters = [blurFilter]
-
-        const STARS = 500
-        const EDGE = 50
-
-        const stars = await Http.get<any[]>('stars', { n: STARS })
-
-        const starPoints = getPoints({
-            n: STARS,
-            minX: EDGE,
-            maxX: this.options.sizeX - EDGE,
-            minY: EDGE,
-            maxY: this.options.sizeY - EDGE,
-            minDistance: 250,
-        })
-
-        stars.forEach((star: any) => {
-            const g = new Pixi.Graphics()
-            g.beginFill(0xffffff)
-            g.drawCircle(star.x * 200, star.y * 200, 15)
-            g.endFill()
-            this.starsContainer.addChild(g)
-
-            const label = new Pixi.Text(star.name, { fill: 0xAAAAAA, align: 'center', fontFamily: 'Arial', fontSize: 14 })
-            label.x = star.x * 200
-            label.y = star.y * 200 + 30
-            label.anchor.set(0.5, 0.5)
-            this.starLabelsContainer.addChild(label)
-        })
+    private async initStars(stars: StarData[]): Promise<void> {
+        for (const star of stars) {
+            const tmp = new Star(star)
+            this.map.render(tmp)
+            this.minimap.render(tmp)
+            this.stars.set(star.id, tmp)
+        }
     }
 
 }
