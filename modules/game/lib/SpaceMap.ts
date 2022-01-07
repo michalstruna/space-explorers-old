@@ -201,7 +201,7 @@ class SpaceMap {
     }
 
     /**
-     * Get color or texture backgroundObj.
+     * Get color or texture background.
      */
     private getBackground(background: Background): Pixi.Sprite {
         if (typeof background === 'number') {

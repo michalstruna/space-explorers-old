@@ -1,4 +1,5 @@
 import * as Pixi from 'pixi.js'
+import { Graphics } from 'pixi.js'
 
 import { GameObjectData, Point } from '../types'
 import { pcToPx } from './Converter'
@@ -17,6 +18,8 @@ abstract class GameObject {
     protected graphics: Pixi.Graphics
     protected miniGraphics: Pixi.Graphics
     protected label: Pixi.Text
+    protected visibilityArea: Pixi.Graphics
+    protected miniVisibilityArea: Pixi.Graphics
 
     public constructor(options: GameObjectData) {
         this._id = options.id
@@ -27,6 +30,8 @@ abstract class GameObject {
         this.graphics = new Pixi.Graphics()
         this.miniGraphics = new Pixi.Graphics()
         this.label = new Pixi.Text(this.name)
+        this.visibilityArea = new Graphics()
+        this.miniVisibilityArea = new Graphics()
     }
 
     public get id() {
@@ -78,11 +83,19 @@ abstract class GameObject {
     }
 
     public renderVisibility() {
-        const visibility = new Pixi.Graphics()
-        visibility.beginFill(0xFFFFFF)
-        visibility.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
-        visibility.endFill()
-        return visibility
+        this.visibilityArea = new Pixi.Graphics()
+        this.visibilityArea.beginFill(0xFFFFFF)
+        this.visibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
+        this.visibilityArea.endFill()
+        return this.visibilityArea
+    }
+
+    public renderMiniVisibility() {
+        this.miniVisibilityArea = new Pixi.Graphics()
+        this.miniVisibilityArea.beginFill(0xFFFFFF)
+        this.miniVisibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
+        this.miniVisibilityArea.endFill()
+        return this.miniVisibilityArea
     }
 
 }
