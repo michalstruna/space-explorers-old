@@ -1,5 +1,4 @@
 import * as Pixi from 'pixi.js'
-import { Viewport } from 'pixi-viewport'
 
 import Http from '../../async/lib/Http'
 import ShiftManager from '../../native/lib/ShiftManager'
@@ -33,25 +32,20 @@ class Game {
 
         Http.get<StarsArea>('stars', { n: nStars }).then(({ stars, size }) => {
             const pxSize = { x: pcToPx(size.x), y: pcToPx(size.y) }
-            const bg = `backgrounds/2.jpg`
 
             this.map = new SpaceMap({
                 container: this.app.stage,
-                screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
-                worldSize: new Pixi.Point(pxSize.x, pxSize.y),
+                screenSize: () => ({ x: window.innerWidth, y: window.innerHeight }),
+                worldSize: { x: pxSize.x, y: pxSize.y },
                 interaction: this.app.renderer.plugins.interaction,
-                background: bg,
-                backgroundColor: 0x000000
+                background: `backgrounds/1.jpg`,
+                overlay: 0x000000
             })
     
             this.minimap = new SpaceMap({
                 container: this.app.stage,
-                screenSize: new Pixi.Point(MINIMAP_SIZE, MINIMAP_SIZE),
-                worldSize: new Pixi.Point(pxSize.x, pxSize.y),
-                interaction: this.app.renderer.plugins.interaction,
-                project: this.map,
-                background: bg,
-                backgroundColor: 0x000000
+                screenSize: { x: MINIMAP_SIZE, y: MINIMAP_SIZE },
+                project: this.map
             })
 
             this.initStars(stars)

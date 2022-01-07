@@ -1,25 +1,34 @@
 import * as Pixi from 'pixi.js'
 
 import { Viewport } from 'pixi-viewport'
-import { Renderable } from '../types'
+import { Point, Renderable } from '../types'
 import { pcToPx } from './Converter'
 
-type MapOptions = {
-    screenSize: Pixi.Point | (() => Pixi.Point)
-    worldSize: Pixi.Point
-    container: Pixi.Container
+type MainMapOptions = {
+    worldSize: Point
     interaction: Pixi.InteractionManager
+}
 
-    project?: SpaceMap
-    background?: string
-    backgroundColor?: number
+type ProjectedMapOptions = {
+    project: SpaceMap
+}
+
+type Background = number | string
+
+type MapOptions = (MainMapOptions | ProjectedMapOptions) & {
+    screenSize: Point | (() => Point)
+    container: Pixi.Container
     onUpdate?: () => void
+
+    background?: Background
+    overlay?: Background
 }
 
 class SpaceMap {
 
     private _viewport: Viewport
-    private screenSize: Pixi.Point | (() => Pixi.Point)
+    private _interaction: Pixi.InteractionManager
+    private screenSize: Point | (() => Point)
     private handleUpdate: () => void
     private project?: SpaceMap
 
@@ -30,9 +39,12 @@ class SpaceMap {
     private labelView = new Pixi.Container()
     private projection = new Pixi.Sprite(Pixi.Texture.WHITE)
 
-    private background = new Pixi.Sprite(Pixi.Texture.WHITE)
-    private backgroundColor = new Pixi.Sprite(Pixi.Texture.WHITE)
-    private backgroundBlur = new Pixi.filters.BlurFilter(0)
+    private _overlay?: Background
+    private _background?: Background
+    private overlayObj = new Pixi.Sprite()
+    private backgroundObj = new Pixi.Sprite()
+
+    private backgroundObjBlur = new Pixi.filters.BlurFilter(0)
 
     private blur = new Pixi.filters.BlurFilter()
     private visibilityMask = new Pixi.Graphics()
@@ -40,46 +52,49 @@ class SpaceMap {
 
     public constructor({
         screenSize,
-        worldSize,
         container,
-        interaction,
-        project,
+        overlay,
         background,
-        backgroundColor,
-        onUpdate = () => { }
+        onUpdate = () => { },
+        ...options
     }: MapOptions) {
         this.screenSize = screenSize
-        this.project = project
         container.addChild(this.root)
-        const size = screenSize instanceof Pixi.Point ? screenSize : screenSize()
+        const size = typeof screenSize === 'object' ? screenSize : screenSize()
+        const isProjected = 'project' in options
+        const worldSize = isProjected ? options.project.worldSize : options.worldSize
+        this.project = isProjected ? options.project : undefined
+        this._interaction = isProjected ? options.project.interaction : options.interaction
 
         this._viewport = new Viewport({
             screenWidth: size.x,
             screenHeight: size.y,
             worldWidth: worldSize.x,
             worldHeight: worldSize.y,
-            noTicker: !!project,
+            noTicker: !!this.project,
             stopPropagation: true,
-            interaction: interaction
-        })  
+            interaction: this.interaction
+        })
 
-        if (backgroundColor !== undefined) {
-            this.backgroundColor.tint = backgroundColor || 0x000000
-            this.root.addChild(this.backgroundColor)
+        if (overlay !== undefined || this.project?.overlay) {
+            this._overlay = overlay
+            this.overlayObj = this.getBackground(overlay ?? this.project!.overlay!)
+            this.root.addChild(this.overlayObj)
         }
 
-        if (background !== undefined) {
-            this.background = Pixi.Sprite.from(background)
-            this.background.filters = [this.backgroundBlur]
-            this.background.alpha = 0.33
-            this.root.addChild(this.background)
+        if (background !== undefined || this.project?.background) {
+            this._background = background
+            this.backgroundObj = this.getBackground(background ?? this.project!.background!)
+            this.backgroundObj.filters = [this.backgroundObjBlur]
+            this.backgroundObj.mask = this.visibilityMask
+            this.root.addChild(this.backgroundObj)
         }
 
         this.viewport.addChild(this.foreground)
         this.foreground.addChild(this.mainView)
         this.foreground.addChild(this.labelView)
 
-        if (project) {
+        if (isProjected) {
             this.viewport.resize(size.x, size.y)
             this.viewport.addChild(this.projection)
             this.projection.alpha = 0.15
@@ -98,11 +113,10 @@ class SpaceMap {
 
         this.mainView.mask = this.visibilityMask
         this.labelView.mask = this.visibilityMask
-        this.background.mask = this.visibilityMask
         this.viewport.addChild(this.visibilityMask)
         this.mainView.filters = [this.blur]
 
-        const updater = project ? project : this
+        const updater = isProjected ? options.project : this
         updater.viewport.on('moved', this.update)
         updater.viewport.on('zoomed', this.update)
         window.addEventListener('resize', this.update)
@@ -137,11 +151,11 @@ class SpaceMap {
             this.projection.position.set(this.project.viewport.corner.x, this.project.viewport.corner.y)
             this.root.position.set(this.project.viewport.screenWidth - this.viewport.screenWidth, 0)
 
-            this.background.width = this.background.height = this.backgroundColor.width = this.backgroundColor.height = this.viewport.screenWidth
+            this.backgroundObj.width = this.backgroundObj.height = this.overlayObj.width = this.overlayObj.height = this.viewport.screenWidth
         } else {
-            this.background.width = this.background.height = this.backgroundColor.width = this.backgroundColor.height = this.viewport.screenWidth * 1.5
-            this.background.position.set(-this.viewport.center.x / 20, -this.viewport.center.y / 20)
-            this.backgroundBlur.blur = this.viewport.scale.x * 5
+            this.backgroundObj.width = this.backgroundObj.height = this.overlayObj.width = this.overlayObj.height = this.viewport.screenWidth * 1.5
+            this.backgroundObj.position.set(-this.viewport.center.x / 20, -this.viewport.center.y / 20)
+            this.backgroundObjBlur.blur = this.viewport.scale.x * 5
         }
 
         this.visibility.width = this.viewport.worldWidth
@@ -167,9 +181,39 @@ class SpaceMap {
         this.visibilityMask.addChild(visibility)
     }
 
+    public get worldSize(): Point {
+        return { x: this.viewport.worldWidth, y: this.viewport.worldHeight }
+    }
+
+    public get interaction(): Pixi.InteractionManager {
+        return this._interaction
+    }
+
+    public get background() {
+        return this._background
+    }
+
+    public get overlay() {
+        return this._overlay
+    }
+
     private handleProjectClick = ({ world }: { world: Pixi.Point }) => {
         this.project!.viewport.moveCenter(world.x, world.y)
         this.update()
+    }
+
+    /**
+     * Get color or texture backgroundObj.
+     */
+    private getBackground(backgroundObj: Background): Pixi.Sprite {
+        if (typeof backgroundObj === 'number') {
+            const result = new Pixi.Sprite(Pixi.Texture.WHITE)
+            result.tint = backgroundObj
+            return result
+        } else {
+            const result = Pixi.Sprite.from(backgroundObj)
+            return result
+        }
     }
 
 }
