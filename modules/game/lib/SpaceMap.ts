@@ -76,15 +76,16 @@ class SpaceMap {
             interaction: this.interaction
         })
 
-        if (overlay !== undefined || this.project?.overlay) {
-            this._overlay = overlay
-            this.overlayObj = this.getBackground(overlay ?? this.project!.overlay!)
+        if (overlay !== undefined || this.project?.overlay !== undefined) {
+            this._overlay = overlay ?? this.project!.overlay
+            if (this.project) console.log(111, this.overlay)
+            this.overlayObj = this.getBackground(this.overlay!)
             this.root.addChild(this.overlayObj)
         }
 
-        if (background !== undefined || this.project?.background) {
-            this._background = background
-            this.backgroundObj = this.getBackground(background ?? this.project!.background!)
+        if (background !== undefined || this.project?.background !== undefined) {
+            this._background = background ?? this.project!.background
+            this.backgroundObj = this.getBackground(this.background!)
             this.backgroundObj.filters = [this.backgroundObjBlur]
             this.backgroundObj.mask = this.visibilityMask
             this.root.addChild(this.backgroundObj)
@@ -205,13 +206,13 @@ class SpaceMap {
     /**
      * Get color or texture backgroundObj.
      */
-    private getBackground(backgroundObj: Background): Pixi.Sprite {
-        if (typeof backgroundObj === 'number') {
+    private getBackground(background: Background): Pixi.Sprite {
+        if (typeof background === 'number') {
             const result = new Pixi.Sprite(Pixi.Texture.WHITE)
-            result.tint = backgroundObj
+            result.tint = background
             return result
         } else {
-            const result = Pixi.Sprite.from(backgroundObj)
+            const result = Pixi.Sprite.from(background)
             return result
         }
     }
