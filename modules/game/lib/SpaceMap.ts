@@ -1,8 +1,9 @@
 import * as Pixi from 'pixi.js'
 
 import { Viewport } from 'pixi-viewport'
-import { Point, Renderable } from '../types'
+import { Point } from '../types'
 import { pcToPx } from './Converter'
+import GameObject from './GameObject'
 
 type MainMapOptions = {
     worldSize: Point
@@ -167,7 +168,7 @@ class SpaceMap {
         this.handleUpdate()
     }
 
-    public render(obj: Renderable) {
+    public render(obj: GameObject) {
         if (this.project) {
             this.mainView.addChild(obj.renderMini())
         } else {
@@ -175,11 +176,7 @@ class SpaceMap {
             this.labelView.addChild(obj.renderLabel())
         }
 
-        const visibility = new Pixi.Graphics()
-        visibility.beginFill(0xFFFFFF)
-        visibility.drawCircle(pcToPx(obj.position.x), pcToPx(obj.position.y), obj.visibility)
-        visibility.endFill()
-        this.visibilityMask.addChild(visibility)
+        this.visibilityMask.addChild(obj.renderVisibility())
     }
 
     public get worldSize(): Point {

@@ -1,7 +1,6 @@
 import * as Pixi from 'pixi.js'
 
 import Http from '../../async/lib/Http'
-import ShiftManager from '../../native/lib/ShiftManager'
 import { GameOptions, StarData, StarsArea } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'

@@ -1,5 +1,6 @@
 import { MutableRefObject, ProviderExoticComponent, RefObject } from 'react'
 import * as Pixi from 'pixi.js'
+import Player from './lib/Player'
 
 export type GameOptions = {
     container?: HTMLElement
@@ -12,10 +13,14 @@ export interface Point {
     y: number
 }
 
-export interface StarData {
+export interface GameObjectData {
     id: number
     name: string
     position: Point
+    owner: Player | null
+}
+
+export interface StarData extends GameObjectData {
     harvard: string
     yerkes: string
 }
@@ -26,12 +31,4 @@ export interface StarsArea {
         x: number
         y: number
     }
-}
-
-export interface Renderable {
-    render(): Pixi.DisplayObject
-    renderMini(): Pixi.DisplayObject
-    renderLabel(): Pixi.Text
-    get visibility(): number
-    get position(): Point
 }
