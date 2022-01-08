@@ -2,10 +2,26 @@ import { MutableRefObject, ProviderExoticComponent, RefObject } from 'react'
 import * as Pixi from 'pixi.js'
 import Player from './lib/Player'
 
-export type GameOptions = {
-    container?: HTMLElement
-    backgroundColor?: number
-    nStars?: number
+export interface LocalGameOptions {
+    container: HTMLElement
+    nStars: number
+}
+
+export interface PlayerOptions {
+    name: string
+    color: number
+}
+
+export interface GameOptions {
+    nStars: number
+    players: PlayerOptions[]
+}
+
+export interface GameData {
+    created: number
+    players: PlayerData[]
+    stars: StarData[]
+    size: Point
 }
 
 export interface Point {
@@ -44,4 +60,6 @@ export interface PlayerData {
     id: string
     name: string
     color: number
+    stars: []
+    ships: []
 }

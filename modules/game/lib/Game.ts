@@ -1,11 +1,11 @@
 import * as Pixi from 'pixi.js'
 
-import Http from '../../async/lib/Http'
-import { GameOptions, StarData, StarsArea } from '../types'
+import { GameData, StarData } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'
 import { pcToPx } from './Converter'
 import Collection from '../../native/lib/Collection'
+import Player from './Player'
 
 const MINIMAP_SIZE = 300
 
@@ -15,41 +15,45 @@ class Game {
     private map: SpaceMap
     private minimap: SpaceMap
     
-    private stars: Collection<Star> = new Collection()
+    private stars: Collection<Star>
+    private players: Collection<Player>
 
-    public constructor({
-        backgroundColor = 0x000000,
-        nStars = 50,
-        container = document.body
-    }: GameOptions) {
+    public constructor(container: HTMLElement, {
+        created,
+        players,
+        size,
+        stars
+    }: GameData) {
+        this.stars = new Collection(stars.map(data => new Star(data)))
+        this.players = new Collection(players.map(data => new Player(data)))
+
+        console.log(players, stars)
+
         this.app = new Pixi.Application({
             resizeTo: window, // TODO: container
-            backgroundColor: backgroundColor
+            backgroundColor: 0x000000
         })
 
         container.appendChild(this.app.view)
-        this.map = this.minimap = null as any
 
-        Http.get<StarsArea>('stars', { n: nStars }).then(({ stars, size }) => {
-            const pxSize = { x: pcToPx(size.x), y: pcToPx(size.y) }
+        const pxSize = { x: pcToPx(size.x), y: pcToPx(size.y) }
 
-            this.map = new SpaceMap({
-                container: this.app.stage,
-                screenSize: () => ({ x: window.innerWidth, y: window.innerHeight }),
-                worldSize: { x: pxSize.x, y: pxSize.y },
-                interaction: this.app.renderer.plugins.interaction,
-                background: `backgrounds/1.jpg`,
-                overlay: 0x000000
-            })
-    
-            this.minimap = new SpaceMap({
-                container: this.app.stage,
-                screenSize: { x: MINIMAP_SIZE, y: MINIMAP_SIZE },
-                project: this.map
-            })
-
-            this.initStars(stars)
+        this.map = new SpaceMap({
+            container: this.app.stage,
+            screenSize: () => ({ x: window.innerWidth, y: window.innerHeight }),
+            worldSize: { x: pxSize.x, y: pxSize.y },
+            interaction: this.app.renderer.plugins.interaction,
+            background: `backgrounds/1.jpg`,
+            overlay: 0x000000
         })
+
+        this.minimap = new SpaceMap({
+            container: this.app.stage,
+            screenSize: { x: MINIMAP_SIZE, y: MINIMAP_SIZE },
+            project: this.map
+        })
+
+        this.initStars(stars)
     }
 
     public release(): void {

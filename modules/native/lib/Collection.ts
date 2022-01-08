@@ -2,6 +2,11 @@ import { UniqueData } from '../../game/types'
 
 class Collection<Item extends UniqueData> extends Map<string, Item> {
 
+    public constructor(item: Item[] = []) {
+        super()
+        if (item) this.add(item)
+    }
+
     public add(item: Item): Item
     public add(items: Item[]): Item[]
     public add(item: Item | Item[]) {

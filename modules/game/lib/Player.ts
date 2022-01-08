@@ -9,6 +9,10 @@ class Player {
     private _color: number
     private _stars = new Collection<Star>()
 
+    public static createEmptyData(options: Partial<PlayerData>): PlayerData {
+        return { id: Date.now().toString(), name: Date.now().toString(), color: 0x000000, stars: [], ships: [], ...options }
+    }
+
     public constructor(options: PlayerData) {
         this._id = options.id
         this._name = options.name

@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Dynamic from 'next/dynamic'
 
-const Map = Dynamic(() => import('../modules/game/components/Map'), { ssr: false })
+const GameInstance = Dynamic(() => import('../modules/game/components/Game'), { ssr: false })
 
 const Game: NextPage = () => {
     return (
@@ -13,7 +13,7 @@ const Game: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <Map />
+            <GameInstance />
         </>
     )
 }
