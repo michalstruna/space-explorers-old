@@ -2,6 +2,7 @@ import * as Pixi from 'pixi.js'
 import { StarData } from '../types'
 import { pcToPx } from './Converter'
 import GameObject from './GameObject'
+import Player from './Player'
 
 const colorMap: Record<string, number> = {
     O: 0x059EFF,
@@ -49,6 +50,12 @@ class Star extends GameObject {
         this.miniGraphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size * 5)
         this.miniGraphics.endFill()
         return this.miniGraphics
+    }
+
+    public set owner(owner: Player | null) {
+        this.owner?.stars.remove(this.id)
+        owner?.stars.add(this)
+        this._owner = owner
     }
 
 }
