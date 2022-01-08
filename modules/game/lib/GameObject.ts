@@ -9,7 +9,7 @@ abstract class GameObject {
 
     public static readonly DEFAULT_VISIBILITY = 1
 
-    protected _id: number
+    protected _id: string
     protected _name: string
     protected _position: Point
     protected _owner: Player | null

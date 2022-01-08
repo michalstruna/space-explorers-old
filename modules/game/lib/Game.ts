@@ -5,6 +5,7 @@ import { GameOptions, StarData, StarsArea } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'
 import { pcToPx } from './Converter'
+import Collection from '../../native/lib/Collection'
 
 const MINIMAP_SIZE = 300
 
@@ -14,7 +15,7 @@ class Game {
     private map: SpaceMap
     private minimap: SpaceMap
     
-    private stars: Map<number, Star> = new Map()
+    private stars: Collection<Star> = new Collection()
 
     public constructor({
         backgroundColor = 0x000000,
@@ -61,7 +62,7 @@ class Game {
             const tmp = new Star(star)
             this.map.render(tmp)
             this.minimap.render(tmp)
-            this.stars.set(star.id, tmp)
+            this.stars.add(tmp)
         }
     }
 

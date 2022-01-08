@@ -13,8 +13,15 @@ export interface Point {
     y: number
 }
 
-export interface GameObjectData {
-    id: number
+export interface Unique {
+    get id(): string
+}
+
+export interface UniqueData {
+    id: string
+}
+
+export interface GameObjectData extends UniqueData {
     name: string
     position: Point
     owner: Player | null
@@ -31,4 +38,10 @@ export interface StarsArea {
         x: number
         y: number
     }
+}
+
+export interface PlayerData {
+    id: string
+    name: string
+    color: number
 }
