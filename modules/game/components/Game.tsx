@@ -21,7 +21,8 @@ const Map: React.FC<Props> = ({
         const gameOptions: GameOptions = {
             nStars,
             players: [
-                { name: 'Michal', color: 0x00aaff }
+                { name: 'Michal', color: 0x00aaff },
+                { name: 'Lenka', color: 0xaa00ff }
             ]
         }
 

@@ -79,7 +79,6 @@ class SpaceMap {
 
         if (overlay !== undefined || this.project?.overlay !== undefined) {
             this._overlay = overlay ?? this.project!.overlay
-            if (this.project) console.log(111, this.overlay)
             this.overlayObj = this.getBackground(this.overlay!)
             this.root.addChild(this.overlayObj)
         }

@@ -1,6 +1,6 @@
-import { UniqueData } from '../../game/types'
+const getId = (item: any) => typeof item === 'object' && 'id' in item ? item.id : item
 
-class Collection<Item extends UniqueData> extends Map<string, Item> {
+class Collection<Item> extends Map<string, Item> {
 
     public constructor(item: Item[] = []) {
         super()
@@ -20,8 +20,8 @@ class Collection<Item extends UniqueData> extends Map<string, Item> {
 
             return result
         } else {
-            if (this.has(item.id)) return undefined
-            this.set(item.id, item)
+            if (this.has(getId(item))) return undefined
+            this.set(getId(item), item)
             return item
         }
     }
@@ -43,6 +43,18 @@ class Collection<Item extends UniqueData> extends Map<string, Item> {
             this.delete(id)
             return item
         }
+    }
+
+    public get(key: string): Item | undefined {
+        return super.get(getId(key))
+    }
+
+    public has(key: string): boolean {
+        return super.has(getId(key))
+    }
+
+    public delete(key: string): boolean {
+        return super.delete(getId(key))
     }
 
     public transfer(id: string, destination: Collection<Item>): Item | undefined

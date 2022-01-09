@@ -1,6 +1,6 @@
 import * as Pixi from 'pixi.js'
 
-import { GameData, StarData } from '../types'
+import { GameData, PlayerData, StarData } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'
 import { pcToPx } from './Converter'
@@ -17,6 +17,7 @@ class Game {
     
     private stars: Collection<Star>
     private players: Collection<Player>
+    private turn: Player
 
     public constructor(container: HTMLElement, {
         created,
@@ -24,10 +25,10 @@ class Game {
         size,
         stars
     }: GameData) {
-        this.stars = new Collection(stars.map(data => new Star(data)))
-        this.players = new Collection(players.map(data => new Player(data)))
-
-        console.log(players, stars)
+        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null })))
+        this.players = new Collection(players.map(data => new Player({ ...data, stars: [], ships: [] })))
+        this.populate(stars, players)
+        this.turn = Array.from(this.players.values())[0]!
 
         this.app = new Pixi.Application({
             resizeTo: window, // TODO: container
@@ -53,7 +54,8 @@ class Game {
             project: this.map
         })
 
-        this.initStars(stars)
+        this.initStars()
+        this.app.ticker.add(this.handleTick)
     }
 
     public release(): void {
@@ -61,13 +63,27 @@ class Game {
         this.minimap.release()
     }
 
-    private async initStars(stars: StarData[]): Promise<void> {
-        for (const star of stars) {
-            const tmp = new Star(star)
-            this.map.render(tmp)
-            this.minimap.render(tmp)
-            this.stars.add(tmp)
+    private async initStars(): Promise<void> {
+        for (const star of Array.from(this.stars.values())) {
+            this.map.render(star)
+            this.minimap.render(star)
+            this.stars.add(star)
         }
+    }
+
+    private populate(starsData: StarData[], playersData: PlayerData[]) {
+        starsData.forEach(starData => {
+            if (starData.owner) {
+                const star = this.stars.get(starData.id)!
+                star.owner = this.players.get(starData.owner)!
+            }
+        })
+
+        // TODO: Populate ships.
+    }
+
+    private handleTick = () => {
+
     }
 
 }

@@ -30,7 +30,7 @@ class Star extends GameObject {
     private size: number
     private color: number
 
-    public constructor(options: StarData) {
+    public constructor(options: StarData<true>) {
         super(options)
         this.yerkes = options.yerkes
         this.harvard = options.harvard
@@ -50,6 +50,10 @@ class Star extends GameObject {
         this.miniGraphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size * 5)
         this.miniGraphics.endFill()
         return this.miniGraphics
+    }
+
+    public get owner() {
+        return this._owner
     }
 
     public set owner(owner: Player | null) {

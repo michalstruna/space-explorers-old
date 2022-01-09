@@ -21,7 +21,7 @@ abstract class GameObject {
     protected visibilityArea: Pixi.Graphics
     protected miniVisibilityArea: Pixi.Graphics
 
-    public constructor(options: GameObjectData) {
+    public constructor(options: GameObjectData<true>) {
         this._id = options.id
         this._name = options.name
         this._position = options.position
@@ -84,9 +84,13 @@ abstract class GameObject {
 
     public renderVisibility() {
         this.visibilityArea = new Pixi.Graphics()
-        this.visibilityArea.beginFill(0xFFFFFF)
-        this.visibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
-        this.visibilityArea.endFill()
+
+        if (this.owner?.id === '0') {
+            this.visibilityArea.beginFill(0xFFFFFF)
+            this.visibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
+            this.visibilityArea.endFill()
+        }
+
         return this.visibilityArea
     }
 
