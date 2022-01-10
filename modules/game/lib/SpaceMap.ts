@@ -4,6 +4,7 @@ import { Viewport } from 'pixi-viewport'
 import { Point } from '../types'
 import { pcToPx } from './Converter'
 import GameObject from './GameObject'
+import Turn from './Turn'
 
 type MainMapOptions = {
     worldSize: Point
@@ -167,15 +168,26 @@ class SpaceMap {
         this.handleUpdate()
     }
 
-    public render(obj: GameObject) {
+    public render(obj: GameObject, turn: Turn) {
         if (this.project) {
-            this.mainView.addChild(obj.renderMini())
-        } else {
-            this.mainView.addChild(obj.render())
-            this.labelView.addChild(obj.renderLabel())
-        }
+            const mini = obj.renderMini(turn)
+            const miniVisibility = obj.renderMiniVisibility(turn)
 
-        this.visibilityMask.addChild(obj.renderVisibility())
+            if (!turn.isInitialized) {
+                this.mainView.addChild(mini)
+                this.visibilityMask.addChild(miniVisibility)
+            } 
+        } else {
+            const main = obj.render(turn)
+            const label = obj.renderLabel(turn)
+            const visibility = obj.renderVisibility(turn)
+
+            if (!turn.isInitialized) {
+                this.mainView.addChild(main)
+                this.labelView.addChild(label)
+                this.visibilityMask.addChild(visibility)
+            }
+        }
     }
 
     public get worldSize(): Point {

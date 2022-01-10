@@ -6,6 +6,7 @@ import SpaceMap from './SpaceMap'
 import { pcToPx } from './Converter'
 import Collection from '../../native/lib/Collection'
 import Player from './Player'
+import Turn from './Turn'
 
 const MINIMAP_SIZE = 300
 
@@ -17,7 +18,7 @@ class Game {
     
     private stars: Collection<Star>
     private players: Collection<Player>
-    private turn: Player
+    private turn: Turn
 
     public constructor(container: HTMLElement, {
         created,
@@ -28,7 +29,6 @@ class Game {
         this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null })))
         this.players = new Collection(players.map(data => new Player({ ...data, stars: [], ships: [] })))
         this.populate(stars, players)
-        this.turn = Array.from(this.players.values())[0]!
 
         this.app = new Pixi.Application({
             resizeTo: window, // TODO: container
@@ -54,21 +54,17 @@ class Game {
             project: this.map
         })
 
-        this.initStars()
         this.app.ticker.add(this.handleTick)
+        this.turn = new Turn({ players: this.players.toArray(), onChange: this.handleTurn })
+
+        setInterval(() => {
+            this.turn.next()
+        }, 1000)
     }
 
     public release(): void {
         this.map.release()
         this.minimap.release()
-    }
-
-    private async initStars(): Promise<void> {
-        for (const star of Array.from(this.stars.values())) {
-            this.map.render(star)
-            this.minimap.render(star)
-            this.stars.add(star)
-        }
     }
 
     private populate(starsData: StarData[], playersData: PlayerData[]) {
@@ -84,6 +80,14 @@ class Game {
 
     private handleTick = () => {
 
+    }
+
+    private handleTurn = () => {
+        for (const star of this.stars.toArray()) {
+            this.map.render(star, this.turn)
+            this.minimap.render(star, this.turn)
+            this.stars.add(star)
+        }
     }
 
 }

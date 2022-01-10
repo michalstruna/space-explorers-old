@@ -26,6 +26,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse<GameDat
         }))
 
         stars[0].owner = '0' // TODO: Remove
+        stars[1].owner = '1'
 
         const size = {
             x: sizeX + EDGE * 2 - offsetX,
@@ -38,7 +39,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse<GameDat
                 ...data,
                 id: i.toString(),
                 ships: [],
-                stars: [stars[0].id]
+                stars: [stars[i].id]
             })),
             size, stars
         })

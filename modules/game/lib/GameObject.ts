@@ -4,6 +4,7 @@ import { Graphics } from 'pixi.js'
 import { GameObjectData, Point } from '../types'
 import { pcToPx } from './Converter'
 import Player from './Player'
+import Turn from './Turn'
 
 abstract class GameObject {
 
@@ -70,11 +71,11 @@ abstract class GameObject {
         this._visibility = visibility
     }
 
-    public abstract render(): Pixi.DisplayObject
+    public abstract render(turn: Turn): Pixi.DisplayObject
 
-    public abstract renderMini(): Pixi.DisplayObject
+    public abstract renderMini(turn: Turn): Pixi.DisplayObject
 
-    public renderLabel(): Pixi.Text {
+    public renderLabel(turn: Turn): Pixi.Text {
         this.label.x = pcToPx(this._position.x)
         this.label.style = { fill: 0xaaaaaa, align: 'center', fontFamily: 'Arial', fontSize: 14 }
         this.label.y = pcToPx(this._position.y) + 50
@@ -82,20 +83,25 @@ abstract class GameObject {
         return this.label
     }
 
-    public renderVisibility() {
-        this.visibilityArea = new Pixi.Graphics()
+    public renderVisibility(turn: Turn) {
+        this.visibilityArea = this.visibilityArea || new Pixi.Graphics()
+        this.visibilityArea.clear()
 
-        if (this.owner?.id === '0') {
-            this.visibilityArea.beginFill(0xFFFFFF)
-            this.visibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
-            this.visibilityArea.endFill()
-        }
+        if (turn.player.id !== this.owner?.id) return this.visibilityArea
+
+        this.visibilityArea.beginFill(0xFFFFFF)
+        this.visibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
+        this.visibilityArea.endFill()
+
 
         return this.visibilityArea
     }
 
-    public renderMiniVisibility() {
-        this.miniVisibilityArea = new Pixi.Graphics()
+    public renderMiniVisibility(turn: Turn) {
+        this.miniVisibilityArea = this.miniVisibilityArea || new Pixi.Graphics()
+        this.miniVisibilityArea.clear()
+        if (turn.player.id !== this.owner?.id) return this.miniVisibilityArea
+
         this.miniVisibilityArea.beginFill(0xFFFFFF)
         this.miniVisibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
         this.miniVisibilityArea.endFill()

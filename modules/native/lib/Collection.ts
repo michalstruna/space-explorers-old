@@ -65,6 +65,10 @@ class Collection<Item> extends Map<string, Item> {
         return destination.add(item) as any
     }
 
+    public toArray() {
+        return Array.from(this.values())
+    }
+
 }
 
 export default Collection
