@@ -22,7 +22,8 @@ const Map: React.FC<Props> = ({
             nStars,
             players: [
                 { name: 'Michal', color: 0x00aaff },
-                { name: 'Lenka', color: 0xaa00ff }
+                { name: 'Lenka', color: 0xaa00ff },
+                { name: 'Radka', color: 0x55aa55 }
             ]
         }
 

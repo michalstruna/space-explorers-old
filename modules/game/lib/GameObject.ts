@@ -77,7 +77,7 @@ abstract class GameObject {
 
     public renderLabel(turn: Turn): Pixi.Text {
         this.label.x = pcToPx(this._position.x)
-        this.label.style = { fill: 0xaaaaaa, align: 'center', fontFamily: 'Arial', fontSize: 14 }
+        this.label.style = { fill: this.owner?.color ?? 0xaaaaaa, align: 'center', fontFamily: 'Arial', fontSize: 14, dropShadow: true, dropShadowDistance: 0, dropShadowBlur: 3 }
         this.label.y = pcToPx(this._position.y) + 50
         this.label.anchor.set(0.5, 0.5)
         return this.label
