@@ -7,6 +7,7 @@ import { pcToPx } from './Converter'
 import Collection from '../../native/lib/Collection'
 import Player from './Player'
 import Turn from './Turn'
+import EventManager from './EventManager'
 
 const MINIMAP_SIZE = 300
 
@@ -19,15 +20,19 @@ class Game {
     private stars: Collection<Star>
     private players: Collection<Player>
     private turn: Turn
+    private events: EventManager
 
-    public constructor(container: HTMLElement, {
+    public constructor({
+        container,
+        events,
         created,
         players,
         size,
         stars
-    }: GameData) {
-        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null })))
+    }: GameData<true>) {
+        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null, events })))
         this.players = new Collection(players.map(data => new Player({ ...data, stars: [], ships: [] })))
+        this.events = events
         this.populate(stars, players)
 
         this.app = new Pixi.Application({

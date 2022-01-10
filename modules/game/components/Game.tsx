@@ -1,5 +1,6 @@
 import React from 'react'
 import Http from '../../async/lib/Http'
+import EventManager from '../lib/EventManager'
 
 import Game from '../lib/Game'
 import { GameData, GameOptions, LocalGameOptions } from '../types'
@@ -27,8 +28,18 @@ const Map: React.FC<Props> = ({
             ]
         }
 
+        const gameEvents = new EventManager({
+            click: ({ object, world, screen }) => {
+                console.log(object, world, screen)
+            }
+        })
+
         Http.post<GameData>('games', gameOptions).then(gameData => {
-            game = new Game(container.current!, gameData)
+            game = new Game({
+                ...gameData,
+                container: container.current!,
+                events: gameEvents
+            })
         })
 
         return () => {

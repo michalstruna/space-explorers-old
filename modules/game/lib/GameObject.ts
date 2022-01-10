@@ -3,6 +3,7 @@ import { Graphics } from 'pixi.js'
 
 import { GameObjectData, Point } from '../types'
 import { pcToPx } from './Converter'
+import EventManager from './EventManager'
 import Player from './Player'
 import Turn from './Turn'
 
@@ -15,6 +16,7 @@ abstract class GameObject {
     protected _position: Point
     protected _owner: Player | null
     protected _visibility: number = GameObject.DEFAULT_VISIBILITY
+    protected events: EventManager
 
     protected graphics: Pixi.Graphics
     protected miniGraphics: Pixi.Graphics
@@ -27,6 +29,7 @@ abstract class GameObject {
         this._name = options.name
         this._position = options.position
         this._owner = options.owner || null
+        this.events = options.events
 
         this.graphics = new Pixi.Graphics()
         this.miniGraphics = new Pixi.Graphics()
