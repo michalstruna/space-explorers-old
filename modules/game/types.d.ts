@@ -33,12 +33,6 @@ export interface UniqueData {
     id: string
 }
 
-
-
-
-
-
-
 export interface GameObjectData<Populated = false> extends UniqueData {
     name: string
     position: Point
@@ -61,4 +55,15 @@ export interface PlayerData<Populated = false> {
     color: number
     stars: (Populated extends true ? Star : string)[]
     ships: string[] // TODO: Populated.
+}
+
+export interface ShipComponent {
+    name: string
+    speed: number
+    cargo: number
+    mass: number
+}
+
+export interface ShipData<Populated = false> extends GameObjectData<Populated> {
+    
 }

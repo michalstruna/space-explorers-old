@@ -56,10 +56,6 @@ class Game {
 
         this.app.ticker.add(this.handleTick)
         this.turn = new Turn({ players: this.players.toArray(), onChange: this.handleTurn })
-
-        setInterval(() => {
-            this.turn.next()
-        }, 1000)
     }
 
     public release(): void {
