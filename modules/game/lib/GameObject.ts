@@ -21,8 +21,6 @@ abstract class GameObject {
     protected graphics: Pixi.Graphics
     protected miniGraphics: Pixi.Graphics
     protected label: Pixi.Text
-    protected visibilityArea: Pixi.Graphics
-    protected miniVisibilityArea: Pixi.Graphics
 
     public constructor(options: GameObjectData<true>) {
         this._id = options.id
@@ -34,8 +32,9 @@ abstract class GameObject {
         this.graphics = new Pixi.Graphics()
         this.miniGraphics = new Pixi.Graphics()
         this.label = new Pixi.Text(this.name)
-        this.visibilityArea = new Graphics()
-        this.miniVisibilityArea = new Graphics()
+
+        this.graphics.interactive = true
+        this.graphics.on('click', (...args) => console.log(111, args))
     }
 
     public get id() {
@@ -86,29 +85,14 @@ abstract class GameObject {
         return this.label
     }
 
-    public renderVisibility(turn: Turn) {
-        this.visibilityArea = this.visibilityArea || new Pixi.Graphics()
-        this.visibilityArea.clear()
+    public renderVisibility(mask: Pixi.Graphics, turn: Turn) {
+        if (turn.player.id !== this.owner?.id) return mask
 
-        if (turn.player.id !== this.owner?.id) return this.visibilityArea
+        mask.beginFill(0xFFFFFF)
+        mask.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
+        mask.endFill()
 
-        this.visibilityArea.beginFill(0xFFFFFF)
-        this.visibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
-        this.visibilityArea.endFill()
-
-
-        return this.visibilityArea
-    }
-
-    public renderMiniVisibility(turn: Turn) {
-        this.miniVisibilityArea = this.miniVisibilityArea || new Pixi.Graphics()
-        this.miniVisibilityArea.clear()
-        if (turn.player.id !== this.owner?.id) return this.miniVisibilityArea
-
-        this.miniVisibilityArea.beginFill(0xFFFFFF)
-        this.miniVisibilityArea.drawCircle(pcToPx(this.position.x), pcToPx(this.position.y), pcToPx(this.visibility))
-        this.miniVisibilityArea.endFill()
-        return this.miniVisibilityArea
+        return mask
     }
 
 }

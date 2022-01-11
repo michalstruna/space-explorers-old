@@ -40,7 +40,7 @@ class Star extends GameObject {
 
     public render(): Pixi.DisplayObject {
         this.graphics.beginFill(this.color)
-        this.graphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size)
+        this.graphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size * 1.5)
         this.graphics.endFill()
         return this.graphics
     }
