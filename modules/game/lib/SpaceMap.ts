@@ -169,22 +169,18 @@ class SpaceMap {
 
     public render(obj: GameObject, turn: Turn) {
         if (this.project) {
-            /*const mini = obj.renderMini(turn)
+            const mini = obj.renderMini(turn)
             obj.renderVisibility(this.visibilityMask, turn)
 
             if (!turn.isInitialized) {
                 this.mainView.addChild(mini)
-            } */
+            }
         } else {
             const main = obj.render(turn)
             const label = obj.renderLabel(turn)
             obj.renderVisibility(this.visibilityMask, turn)
 
             if (!turn.isInitialized) {        
-                this.visibilityMask.beginFill()
-                this.visibilityMask.drawCircle(0, 0, 1000)
-                this.visibilityMask.endFill()
-
                 this.mainView.addChild(main)
                 this.labelView.addChild(label)
             }

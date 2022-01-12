@@ -1,22 +1,33 @@
 import React from 'react'
-import Http from '../../async/lib/Http'
-import EventManager from '../lib/EventManager'
+import EventEmitter from 'eventemitter3'
 
+import Http from '../../async/lib/Http'
 import Game from '../lib/Game'
 import { GameData, GameOptions, LocalGameOptions } from '../types'
 
 import styles from './Game.module.scss'
+import Star from '../lib/Star'
+import Sidebar from './Sidebar'
+import Minimap from './Minimap'
 
-interface Props extends Partial<Omit<LocalGameOptions, 'container'>> {
+interface Props extends Partial<Omit<LocalGameOptions, 'container'>>, React.ComponentPropsWithoutRef<'div'> {
 
 }
 
 const Map: React.FC<Props> = ({ 
-    nStars = 100
+    nStars = 100,
+    ...props
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
+    const selectedStar = React.useState<Star>()
 
     React.useEffect(() => {
+        const events = new EventEmitter()
+
+        events.on('click', ({ object }) => {
+            console.log(444, object)
+        })
+
         let game: Game | null = null
 
         const gameOptions: GameOptions = {
@@ -28,18 +39,8 @@ const Map: React.FC<Props> = ({
             ]
         }
 
-        const gameEvents = new EventManager({
-            click: ({ object, world, screen }) => {
-                console.log(object, world, screen)
-            }
-        })
-
         Http.post<GameData>('games', gameOptions).then(gameData => {
-            game = new Game({
-                ...gameData,
-                container: container.current!,
-                events: gameEvents
-            })
+            game = new Game({ ...gameData, container: container.current!, events })
         })
 
         return () => {
@@ -48,8 +49,12 @@ const Map: React.FC<Props> = ({
     }, [])
 
     return (
-        <div ref={container} className={styles.root}>
-            
+        <div className={styles.root} {...props}>
+            <div ref={container} className={styles.canvas} />
+            <div className={styles.ui}>
+                <Minimap />
+                <Sidebar />
+            </div>
         </div>
     )
 }

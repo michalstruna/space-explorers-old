@@ -1,4 +1,5 @@
 import * as Pixi from 'pixi.js'
+import EventEmitter from 'eventemitter3'
 
 import { GameData, PlayerData, StarData } from '../types'
 import Star from './Star'
@@ -7,7 +8,6 @@ import { pcToPx } from './Converter'
 import Collection from '../../native/lib/Collection'
 import Player from './Player'
 import Turn from './Turn'
-import EventManager from './EventManager'
 
 const MINIMAP_SIZE = 300
 
@@ -20,7 +20,7 @@ class Game {
     private stars: Collection<Star>
     private players: Collection<Player>
     private turn: Turn
-    private events: EventManager
+    private events: EventEmitter
 
     public constructor({
         container,
