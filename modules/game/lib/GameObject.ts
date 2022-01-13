@@ -5,6 +5,7 @@ import { GameObjectData, Point } from '../types'
 import { pcToPx } from './Converter'
 import Player from './Player'
 import Turn from './Turn'
+import { InteractionEvent } from 'pixi.js'
 
 abstract class GameObject {
 
@@ -100,10 +101,15 @@ abstract class GameObject {
         return mask
     }
 
+    private handleClick = (e: InteractionEvent) => {
+        e.stopPropagation()
+        this.events.emit('click', { object: this })
+    }
+
     private bindEvents() {
         this.graphics.interactive = this.label.interactive = true
-        this.graphics.on('click', () => this.events.emit('click', { object: this }))
-        this.label.on('click', () => this.events.emit('click', { object: this }))
+        this.graphics.on('mousedown', this.handleClick)
+        this.label.on('mousedown', this.handleClick)
     }
 
 }

@@ -53,6 +53,8 @@ class Game {
             overlay: 0x000000
         })
 
+        this.map.viewport.on('mousedown', () => events.emit('click', {}))
+
         this.minimap = new SpaceMap({
             container: this.app.stage,
             screenSize: { x: MINIMAP_SIZE, y: MINIMAP_SIZE },

@@ -1,3 +1,12 @@
 .root {
+    @include pos(bottom, right);
+    @include padding(1rem);
+    @include size($sidebar-width, calc(100% - $sidebar-width));
+    background-color: $semitransparent-darkest;
+    color: $lightest-color;
+    transition: opacity $medium-duration;
 
+    &:empty {
+        opacity: 0;
+    }
 }

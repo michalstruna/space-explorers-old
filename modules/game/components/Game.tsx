@@ -6,9 +6,9 @@ import Game from '../lib/Game'
 import { GameData, GameOptions, LocalGameOptions } from '../types'
 
 import styles from './Game.module.scss'
-import Star from '../lib/Star'
 import Sidebar from './Sidebar'
 import Minimap from './Minimap'
+import GameObject from '../lib/GameObject'
 
 interface Props extends Partial<Omit<LocalGameOptions, 'container'>>, React.ComponentPropsWithoutRef<'div'> {
 
@@ -19,13 +19,13 @@ const Map: React.FC<Props> = ({
     ...props
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
-    const selectedStar = React.useState<Star>()
+    const [selectedObject, selectObject] = React.useState<GameObject>()
 
     React.useEffect(() => {
         const events = new EventEmitter()
 
         events.on('click', ({ object }) => {
-            console.log(444, object)
+            selectObject(object)
         })
 
         let game: Game | null = null
@@ -53,7 +53,7 @@ const Map: React.FC<Props> = ({
             <div ref={container} className={styles.canvas} />
             <div className={styles.ui}>
                 <Minimap />
-                <Sidebar />
+                <Sidebar object={selectedObject} />
             </div>
         </div>
     )

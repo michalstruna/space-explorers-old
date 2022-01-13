@@ -1,0 +1,23 @@
+@use "sass:meta";
+
+@mixin size($width: 100%, $height: $width, $line: false) {
+    height: $height;
+    width: $width;
+
+    @if $line {
+        line-height: $height;
+    }
+}
+
+@mixin padding($padding) {
+    box-sizing: border-box;
+    padding: $padding;
+}
+
+@mixin pos($props...) {
+    position: absolute;
+
+    @each $prop in $props {
+        #{$prop}: 0;
+    }
+}
