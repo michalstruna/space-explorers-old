@@ -1,30 +1,31 @@
 import * as Pixi from 'pixi.js'
-import EventEmitter from 'eventemitter3'
+import { InteractionEvent } from 'pixi.js'
 
 import { GameObjectData, Point } from '../types'
 import { pcToPx } from './Converter'
 import Player from './Player'
 import Turn from './Turn'
-import { InteractionEvent } from 'pixi.js'
+import Events from './Events'
 
 abstract class GameObject {
 
     public static readonly DEFAULT_VISIBILITY = 1
 
-    protected _id: string
-    protected _name: string
+    public readonly id: string
+    public readonly name: string
     protected _position: Point
     protected _owner: Player | null
     protected _visibility: number = GameObject.DEFAULT_VISIBILITY
-    protected events: EventEmitter
+    protected events: Events
+    protected hitArea = new Pixi.Rectangle()
 
-    protected graphics: Pixi.Graphics
-    protected miniGraphics: Pixi.Graphics
-    protected label: Pixi.Text
+    public readonly graphics: Pixi.Graphics
+    public readonly miniGraphics: Pixi.Graphics
+    public readonly label: Pixi.Text
 
     public constructor(options: GameObjectData<true>) {
-        this._id = options.id
-        this._name = options.name
+        this.id = options.id
+        this.name = options.name
         this._position = options.position
         this._owner = options.owner || null
         this.events = options.events
@@ -33,19 +34,9 @@ abstract class GameObject {
         this.miniGraphics = new Pixi.Graphics()
         this.label = new Pixi.Text(this.name)
 
+        this.graphics.hitArea = this.hitArea
+
         this.bindEvents()
-    }
-
-    public get id() {
-        return this._id
-    }
-
-    public get name() {
-        return this._name
-    }
-
-    public set name(name: string) {
-        this._name = name
     }
 
     public get position() {
@@ -101,15 +92,14 @@ abstract class GameObject {
         return mask
     }
 
-    private handleClick = (e: InteractionEvent) => {
-        e.stopPropagation()
+    private handleClick = () => {
         this.events.emit('click', { object: this })
     }
 
     private bindEvents() {
         this.graphics.interactive = this.label.interactive = true
-        this.graphics.on('mousedown', this.handleClick)
-        this.label.on('mousedown', this.handleClick)
+        this.graphics.on('click', this.handleClick)
+        this.label.on('click', this.handleClick)
     }
 
 }

@@ -92,8 +92,8 @@ class SpaceMap {
         }
 
         this.viewport.addChild(this.foreground)
-        this.foreground.addChild(this.mainView)
         this.foreground.addChild(this.labelView)
+        this.foreground.addChild(this.mainView)
 
         if (isProjected) {
             this.viewport.resize(size.x, size.y)

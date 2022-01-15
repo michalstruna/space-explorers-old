@@ -1,0 +1,5 @@
+.close-button {
+    @include opacity-hover;
+    @include img("controls/close.svg", auto 50%);
+    @include size(2rem);
+}

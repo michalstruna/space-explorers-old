@@ -1,13 +1,14 @@
 import * as Pixi from 'pixi.js'
-import EventEmitter from 'eventemitter3'
 
 import { GameData, PlayerData, StarData } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'
 import { pcToPx } from './Converter'
-import Collection from '../../native/lib/Collection'
+import Collection from '../../utils/lib/Collection'
 import Player from './Player'
 import Turn from './Turn'
+import Events from './Events'
+import GameObject from './GameObject'
 
 const MINIMAP_SIZE = 300
 
@@ -18,9 +19,10 @@ class Game {
     private minimap: SpaceMap
     
     private stars: Collection<Star>
+    private rendered = new Collection<GameObject, Pixi.DisplayObject>()
     private players: Collection<Player>
     private turn: Turn
-    private events: EventEmitter
+    private events: Events
 
     public constructor({
         container,
@@ -53,7 +55,10 @@ class Game {
             overlay: 0x000000
         })
 
-        this.map.viewport.on('mousedown', () => events.emit('click', {}))
+        this.map.viewport.on('click', (e) => {
+            const target = this.rendered.get(e.target)
+            if (target) events.emit('click', target)
+        })
 
         this.minimap = new SpaceMap({
             container: this.app.stage,
@@ -72,10 +77,9 @@ class Game {
 
     private populate(starsData: StarData[], playersData: PlayerData[]) {
         starsData.forEach(starData => {
-            if (starData.owner) {
-                const star = this.stars.get(starData.id)!
-                star.owner = this.players.get(starData.owner)!
-            }
+            const star = this.stars.get(starData.id)!
+            this.rendered.set(star.graphics, star)
+            if (starData.owner) star.owner = this.players.get(starData.owner)!
         })
 
         // TODO: Populate ships.

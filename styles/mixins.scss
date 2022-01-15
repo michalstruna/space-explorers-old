@@ -21,3 +21,19 @@
         #{$prop}: 0;
     }
 }
+
+@mixin opacity-hover($opacity: 0.6, $duration: $medium-duration) {
+    opacity: $opacity;
+    transition: opacity $duration;
+
+    &:hover, &:active {
+        opacity: 1;
+    }
+}
+
+@mixin img($path, $size: auto 100%, $position: center center, $repeat: no-repeat) {
+    background-image: url(/#{$path});
+    background-position: $position;
+    background-repeat: $repeat;
+    background-size: $size;
+}

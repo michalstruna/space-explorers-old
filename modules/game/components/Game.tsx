@@ -1,14 +1,15 @@
 import React from 'react'
-import EventEmitter from 'eventemitter3'
 
 import Http from '../../async/lib/Http'
 import Game from '../lib/Game'
 import { GameData, GameOptions, LocalGameOptions } from '../types'
+import { useGlobalState } from '../data/GlobalState'
 
 import styles from './Game.module.scss'
 import Sidebar from './Sidebar'
 import Minimap from './Minimap'
 import GameObject from '../lib/GameObject'
+import Events from '../lib/Events'
 
 interface Props extends Partial<Omit<LocalGameOptions, 'container'>>, React.ComponentPropsWithoutRef<'div'> {
 
@@ -19,10 +20,10 @@ const Map: React.FC<Props> = ({
     ...props
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
-    const [selectedObject, selectObject] = React.useState<GameObject>()
+    const [selectedObject, selectObject] = useGlobalState('selectedObject')
 
     React.useEffect(() => {
-        const events = new EventEmitter()
+        const events = new Events()
 
         events.on('click', ({ object }) => {
             selectObject(object)
@@ -53,7 +54,7 @@ const Map: React.FC<Props> = ({
             <div ref={container} className={styles.canvas} />
             <div className={styles.ui}>
                 <Minimap />
-                <Sidebar object={selectedObject} />
+                <Sidebar />
             </div>
         </div>
     )

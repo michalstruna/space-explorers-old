@@ -3,6 +3,7 @@ import { StarData } from '../types'
 import { pcToPx } from './Converter'
 import GameObject from './GameObject'
 import Player from './Player'
+import Turn from './Turn'
 
 const colorMap: Record<string, number> = {
     O: 0x059EFF,
@@ -39,17 +40,32 @@ class Star extends GameObject {
     } 
 
     public render(): Pixi.DisplayObject {
+        const pos = this.pxPosition
+        const size = this.size * 5
+
+        this.hitArea.x = pos.x - size
+        this.hitArea.y = pos.y + Math.floor(this.size / 5) - size
+        this.hitArea.height = this.hitArea.width = size * 2
+        
+
         this.graphics.beginFill(this.color)
-        this.graphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size * 1.5)
+        this.graphics.drawCircle(this.pxPosition.x, this.pxPosition.y, this.size * 1.5)
         this.graphics.endFill()
         return this.graphics
     }
 
     public renderMini(): Pixi.DisplayObject {
         this.miniGraphics.beginFill(this.color)
-        this.miniGraphics.drawCircle(pcToPx(this._position.x), pcToPx(this._position.y), this.size * 5)
+        this.miniGraphics.drawCircle(this.pxPosition.x, this.pxPosition.y, this.size * 5)
         this.miniGraphics.endFill()
         return this.miniGraphics
+    }
+
+    public renderLabel(turn: Turn) {
+        const label = super.renderLabel(turn)
+        label.y = this.pxPosition.y + this.size * 4
+        // TODO: super(this.size * constant) - radius of GameObject + hitArea in parent?
+        return label
     }
 
     public get owner() {

@@ -4,9 +4,25 @@
     @include size($sidebar-width, calc(100% - $sidebar-width));
     background-color: $semitransparent-darkest;
     color: $lightest-color;
-    transition: opacity $medium-duration;
+    pointer-events: none;
 
     &:empty {
-        opacity: 0;
+        display: none;
     }
+
+    & > * {
+        pointer-events: all;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.title {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

@@ -1,9 +1,9 @@
 import { MutableRefObject, ProviderExoticComponent, RefObject } from 'react'
 import * as Pixi from 'pixi.js'
-import EventEmitter from 'eventemitter3'
 
 import Player from './lib/Player'
 import Star from './lib/Star'
+import Events from './lib/Events'
 
 export interface LocalGameOptions {
     container: HTMLElement
@@ -21,7 +21,7 @@ export interface GameData<Populated = false> {
     stars: StarData[]
     size: Point
     container: Populated extends true ? HTMLElement : undefined
-    events: Populated extends true ? EventEmitter : undefined
+    events: Populated extends true ? Events : undefined
 }
 
 export interface Point {
