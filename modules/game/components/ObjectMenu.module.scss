@@ -1,0 +1,16 @@
+.root {
+
+    & > div {
+        margin: 0.3rem 0;
+    }
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    & > div {
+        width: 100%;
+    }
+}

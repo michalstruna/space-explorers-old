@@ -31,7 +31,7 @@
     }
 }
 
-@mixin img($path, $size: auto 100%, $position: center center, $repeat: no-repeat) {
+@mixin img($path: null, $size: auto 100%, $position: center center, $repeat: no-repeat) {
     background-image: url(/#{$path});
     background-position: $position;
     background-repeat: $repeat;

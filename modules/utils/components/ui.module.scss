@@ -3,3 +3,80 @@
     @include img("controls/close.svg", auto 50%);
     @include size(2rem);
 }
+
+.value {
+    @include img(null, auto 1.5rem, left center);
+    display: inline-block;
+
+    &__label, &__main {
+        padding-left: 1.8rem;
+        vertical-align: middle;
+    }
+
+    &__current, &__max {
+        display: inline-block;
+    }
+
+    &__current {
+        font-weight: bold;
+    }
+
+    &__max {
+        &:before {
+            content: "/";
+            display: inline-block;
+            margin: 0 0.3em;
+        }
+    }
+}
+
+.stack {
+    display: block;
+    margin-top: 1.5rem !important;
+
+    &__main {
+        display: flex;
+        justify-content: left;
+        width: 100%;
+
+        & > button {
+            @include size(2rem);
+        }
+    }
+
+    &__items {
+        box-sizing: border-box;
+        margin-right: 2.2rem;
+        white-space: nowrap;
+        width: calc(100% - 6.5rem);
+    }
+
+    &__button {
+        @include opacity-hover;
+        @include size(2rem);
+
+        &--remove {
+            @include img("controls/minus.svg", auto 50%);
+        }
+
+        &--add {
+            @include img("controls/plus.svg", auto 50%);
+        }
+    }
+
+    &__item {
+        display: inline-block;
+        overflow: visible;
+        @include size(2.5rem);
+
+        &--inner {
+            @include img;
+            @include size(2.5rem);
+        }
+    }
+
+    &__info {
+        font-size: 90%;
+    }
+
+}

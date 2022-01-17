@@ -18,10 +18,10 @@ const Sidebar: React.FC<Props> = ({ ...props }) => {
         <div className={styles.root} {...props}>
             {selectedObject ? (
                 <>
-                    <div className={styles.header}>
+                    <header className={styles.header}>
                         <h2 className={styles.title}>{selectedObject.name}</h2>
                         <CloseButton onClick={() => selectObject(null)} />
-                    </div>
+                    </header>
                     {selectedObject instanceof Star ? <StarMenu star={selectedObject} /> : null}
                 </>
             ) : null}

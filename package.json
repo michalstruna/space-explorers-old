@@ -11,6 +11,7 @@
         "axios": "^0.24.0",
         "keycode": "^2.2.1",
         "next": "12.0.7",
+        "numeral": "^2.0.6",
         "pixi-viewport": "^4.34.4",
         "pixi.js": "^6.2.1",
         "poisson-disk-sampling": "^2.2.2",
@@ -22,6 +23,7 @@
     },
     "devDependencies": {
         "@types/node": "17.0.4",
+        "@types/numeral": "^2.0.2",
         "@types/react": "17.0.38",
         "eslint": "8.5.0",
         "eslint-config-next": "12.0.7",

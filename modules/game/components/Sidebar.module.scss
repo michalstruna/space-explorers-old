@@ -16,6 +16,7 @@
 }
 
 .header {
+    @include size(100%, $object-header-height);
     display: flex;
     justify-content: space-between;
 }
