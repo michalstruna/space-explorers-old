@@ -31,12 +31,24 @@ class Star extends GameObject {
     private size: number
     private color: number
 
+    private _maxPopulation: number
+    private _population: number
+    private _farmers: number
+    private _workers: number
+    private _scientists: number
+
     public constructor(options: StarData<true>) {
         super(options)
         this.yerkes = options.yerkes
         this.harvard = options.harvard
         this.color = colorMap[this.harvard[0]]
         this.size = sizeMap[this.yerkes]
+
+        this._maxPopulation = this.size // TODO: Calculate.
+        this._population = options.population
+        this._farmers = options.farmers
+        this._workers = options.workers
+        this._scientists = options.scientists
     } 
 
     public render(): Pixi.DisplayObject {
@@ -76,6 +88,47 @@ class Star extends GameObject {
         this.owner?.stars.remove(this.id)
         owner?.stars.add(this)
         this._owner = owner
+        this.handleUpdate()
+    }
+
+    public get maxPopulation(): number {
+        return this._maxPopulation
+    }
+ 
+    public get population(): number {
+        return this._population
+    }
+
+    public set population(value: number) {
+        this._population = value
+        this.handleUpdate()
+    }
+
+    public get farmers(): number {
+        return this._farmers
+    }
+
+    public set farmers(value: number) {
+        this._farmers = value
+        this.handleUpdate()
+    }
+
+    public get workers(): number {
+        return this._workers
+    }
+
+    public set workers(value: number) {
+        this._workers = value
+        this.handleUpdate()
+    }
+
+    public get scientists(): number {
+        return this._scientists
+    }
+
+    public set scientists(value: number) {
+        this._scientists = value
+        this.handleUpdate()
     }
 
 }

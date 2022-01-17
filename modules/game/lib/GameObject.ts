@@ -16,8 +16,9 @@ abstract class GameObject {
     protected _position: Point
     protected _owner: Player | null
     protected _visibility: number = GameObject.DEFAULT_VISIBILITY
-    protected events: Events
-    protected hitArea = new Pixi.Rectangle()
+    protected readonly events: Events
+    protected readonly hitArea = new Pixi.Rectangle()
+    protected readonly handleUpdate: () => void
 
     public readonly graphics: Pixi.Graphics
     public readonly miniGraphics: Pixi.Graphics
@@ -29,6 +30,7 @@ abstract class GameObject {
         this._position = options.position
         this._owner = options.owner || null
         this.events = options.events
+        this.handleUpdate = options.onUpdate
 
         this.graphics = new Pixi.Graphics()
         this.miniGraphics = new Pixi.Graphics()
@@ -45,6 +47,7 @@ abstract class GameObject {
 
     public set position(position: Point) {
         this._position = position
+        this.handleUpdate()
     }
 
     public get pxPosition() {
@@ -57,6 +60,7 @@ abstract class GameObject {
 
     public set owner(owner: Player | null) {
         this._owner = owner
+        this.handleUpdate()
     }
 
     public get visibility() {
@@ -65,6 +69,7 @@ abstract class GameObject {
 
     public set visibility(visibility: number) {
         this._visibility = visibility
+        this.handleUpdate()
     }
 
     public abstract render(turn: Turn): Pixi.DisplayObject

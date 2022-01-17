@@ -32,7 +32,7 @@ class Game {
         size,
         stars
     }: GameData<true>) {
-        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null, events })))
+        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null, events, farmers: 0, workers: 0, scientists: 0, population: 8, onUpdate: this.getObjectUpdate(data.id) })))
         this.players = new Collection(players.map(data => new Player({ ...data, stars: [], ships: [] })))
         this.events = events
         this.populate(stars, players)
@@ -57,7 +57,7 @@ class Game {
 
         this.map.viewport.on('click', (e) => {
             const target = this.rendered.get(e.target)
-            if (target) events.emit('click', target)
+            if (target) events?.emit('click', target)
         })
 
         this.minimap = new SpaceMap({
@@ -68,6 +68,10 @@ class Game {
 
         this.app.ticker.add(this.handleTick)
         this.turn = new Turn({ players: this.players.toArray(), onChange: this.handleTurn })
+    }
+
+    private getObjectUpdate = (id: string) => () => {
+        this.events?.emit('update', { object: this.stars.get(id) }) // TODO: Or ship.
     }
 
     public release(): void {

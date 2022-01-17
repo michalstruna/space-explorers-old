@@ -16,6 +16,12 @@ class Events extends EventEmitter<string> {
         return super.emit(event, ...args)
     }
 
+    public on(event: string, fn: EventEmitter.ListenerFn, context?: any): this {
+        this.off(event)
+        super.on(event, fn, context)
+        return this
+    }
+
 }
 
 export default Events

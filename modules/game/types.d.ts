@@ -42,11 +42,17 @@ export interface GameObjectData<Populated = false> extends UniqueData {
     position: Point
     owner: (Populated extends true ? Player : string) | null
     events: Populated extends true ? EventEmitte : undefined
+    onUpdate: Populated extends true ? (() => void) : undefined
 }
 
 export interface StarData<Populated = false> extends GameObjectData<Populated> {
     harvard: string
     yerkes: string
+
+    population: number
+    farmers: number
+    workers: number
+    scientists: number
 }
 
 export interface PlayerOptions {
