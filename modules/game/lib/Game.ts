@@ -1,12 +1,12 @@
 import * as Pixi from 'pixi.js'
-import { Viewport } from 'pixi-viewport'
 
-import Http from '../../async/lib/Http'
-import ShiftManager from '../../native/lib/ShiftManager'
-import { GameOptions, StarData, StarsArea } from '../types'
+import { GameData, PlayerData, StarData } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'
 import { pcToPx } from './Converter'
+import Collection from '../../native/lib/Collection'
+import Player from './Player'
+import Turn from './Turn'
 
 const MINIMAP_SIZE = 300
 
@@ -16,46 +16,46 @@ class Game {
     private map: SpaceMap
     private minimap: SpaceMap
     
-    private stars: Map<number, Star> = new Map()
+    private stars: Collection<Star>
+    private players: Collection<Player>
+    private turn: Turn
 
-    public constructor({
-        backgroundColor = 0x000000,
-        nStars = 50,
-        container = document.body
-    }: GameOptions) {
+    public constructor(container: HTMLElement, {
+        created,
+        players,
+        size,
+        stars
+    }: GameData) {
+        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null })))
+        this.players = new Collection(players.map(data => new Player({ ...data, stars: [], ships: [] })))
+        this.populate(stars, players)
+
         this.app = new Pixi.Application({
             resizeTo: window, // TODO: container
-            backgroundColor: backgroundColor
+            backgroundColor: 0x000000
         })
 
         container.appendChild(this.app.view)
-        this.map = this.minimap = null as any
 
-        Http.get<StarsArea>('stars', { n: nStars }).then(({ stars, size }) => {
-            const pxSize = { x: pcToPx(size.x), y: pcToPx(size.y) }
-            const bg = `backgrounds/2.jpg`
+        const pxSize = { x: pcToPx(size.x), y: pcToPx(size.y) }
 
-            this.map = new SpaceMap({
-                container: this.app.stage,
-                screenSize: () => new Pixi.Point(window.innerWidth, window.innerHeight),
-                worldSize: new Pixi.Point(pxSize.x, pxSize.y),
-                interaction: this.app.renderer.plugins.interaction,
-                background: bg,
-                backgroundColor: 0x000000
-            })
-    
-            this.minimap = new SpaceMap({
-                container: this.app.stage,
-                screenSize: new Pixi.Point(MINIMAP_SIZE, MINIMAP_SIZE),
-                worldSize: new Pixi.Point(pxSize.x, pxSize.y),
-                interaction: this.app.renderer.plugins.interaction,
-                project: this.map,
-                background: bg,
-                backgroundColor: 0x000000
-            })
-
-            this.initStars(stars)
+        this.map = new SpaceMap({
+            container: this.app.stage,
+            screenSize: () => ({ x: window.innerWidth, y: window.innerHeight }),
+            worldSize: { x: pxSize.x, y: pxSize.y },
+            interaction: this.app.renderer.plugins.interaction,
+            background: `backgrounds/1.jpg`,
+            overlay: 0x000000
         })
+
+        this.minimap = new SpaceMap({
+            container: this.app.stage,
+            screenSize: { x: MINIMAP_SIZE, y: MINIMAP_SIZE },
+            project: this.map
+        })
+
+        this.app.ticker.add(this.handleTick)
+        this.turn = new Turn({ players: this.players.toArray(), onChange: this.handleTurn })
     }
 
     public release(): void {
@@ -63,12 +63,26 @@ class Game {
         this.minimap.release()
     }
 
-    private async initStars(stars: StarData[]): Promise<void> {
-        for (const star of stars) {
-            const tmp = new Star(star)
-            this.map.render(tmp)
-            this.minimap.render(tmp)
-            this.stars.set(star.id, tmp)
+    private populate(starsData: StarData[], playersData: PlayerData[]) {
+        starsData.forEach(starData => {
+            if (starData.owner) {
+                const star = this.stars.get(starData.id)!
+                star.owner = this.players.get(starData.owner)!
+            }
+        })
+
+        // TODO: Populate ships.
+    }
+
+    private handleTick = () => {
+
+    }
+
+    private handleTurn = () => {
+        for (const star of this.stars.toArray()) {
+            this.map.render(star, this.turn)
+            this.minimap.render(star, this.turn)
+            this.stars.add(star)
         }
     }
 

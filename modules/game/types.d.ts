@@ -1,10 +1,23 @@
 import { MutableRefObject, ProviderExoticComponent, RefObject } from 'react'
 import * as Pixi from 'pixi.js'
+import Player from './lib/Player'
+import Star from './lib/Star'
 
-export type GameOptions = {
-    container?: HTMLElement
-    backgroundColor?: number
-    nStars?: number
+export interface LocalGameOptions {
+    container: HTMLElement
+    nStars: number
+}
+
+export interface GameOptions {
+    nStars: number
+    players: PlayerOptions[]
+}
+
+export interface GameData {
+    created: number
+    players: PlayerData[]
+    stars: StarData[]
+    size: Point
 }
 
 export interface Point {
@@ -12,26 +25,45 @@ export interface Point {
     y: number
 }
 
-export interface StarData {
-    id: number
+export interface Unique {
+    get id(): string
+}
+
+export interface UniqueData {
+    id: string
+}
+
+export interface GameObjectData<Populated = false> extends UniqueData {
     name: string
     position: Point
+    owner: (Populated extends true ? Player : string) | null
+}
+
+export interface StarData<Populated = false> extends GameObjectData<Populated> {
     harvard: string
     yerkes: string
 }
 
-export interface StarsArea {
-    stars: StarData[]
-    size: {
-        x: number
-        y: number
-    }
+export interface PlayerOptions {
+    name: string
+    color: number
 }
 
-export interface Renderable {
-    render(): Pixi.DisplayObject
-    renderMini(): Pixi.DisplayObject
-    renderLabel(): Pixi.Text
-    get visibility(): number
-    get position(): Point
+export interface PlayerData<Populated = false> {
+    id: string
+    name: string
+    color: number
+    stars: (Populated extends true ? Star : string)[]
+    ships: string[] // TODO: Populated.
+}
+
+export interface ShipComponent {
+    name: string
+    speed: number
+    cargo: number
+    mass: number
+}
+
+export interface ShipData<Populated = false> extends GameObjectData<Populated> {
+    
 }
