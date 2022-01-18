@@ -51,7 +51,6 @@ class SpaceMap {
     private blur = new Pixi.filters.BlurFilter()
     private visibilityMask = new Pixi.Graphics()
 
-
     public constructor({
         screenSize,
         container,
@@ -93,8 +92,8 @@ class SpaceMap {
         }
 
         this.viewport.addChild(this.foreground)
-        this.foreground.addChild(this.mainView)
         this.foreground.addChild(this.labelView)
+        this.foreground.addChild(this.mainView)
 
         if (isProjected) {
             this.viewport.resize(size.x, size.y)
@@ -171,21 +170,19 @@ class SpaceMap {
     public render(obj: GameObject, turn: Turn) {
         if (this.project) {
             const mini = obj.renderMini(turn)
-            const miniVisibility = obj.renderMiniVisibility(turn)
+            obj.renderVisibility(this.visibilityMask, turn)
 
             if (!turn.isInitialized) {
                 this.mainView.addChild(mini)
-                this.visibilityMask.addChild(miniVisibility)
-            } 
+            }
         } else {
             const main = obj.render(turn)
             const label = obj.renderLabel(turn)
-            const visibility = obj.renderVisibility(turn)
+            obj.renderVisibility(this.visibilityMask, turn)
 
-            if (!turn.isInitialized) {
+            if (!turn.isInitialized) {        
                 this.mainView.addChild(main)
                 this.labelView.addChild(label)
-                this.visibilityMask.addChild(visibility)
             }
         }
     }

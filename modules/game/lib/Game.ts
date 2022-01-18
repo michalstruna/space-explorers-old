@@ -4,9 +4,11 @@ import { GameData, PlayerData, StarData } from '../types'
 import Star from './Star'
 import SpaceMap from './SpaceMap'
 import { pcToPx } from './Converter'
-import Collection from '../../native/lib/Collection'
+import Collection from '../../utils/lib/Collection'
 import Player from './Player'
 import Turn from './Turn'
+import Events from './Events'
+import GameObject from './GameObject'
 
 const MINIMAP_SIZE = 300
 
@@ -17,17 +19,22 @@ class Game {
     private minimap: SpaceMap
     
     private stars: Collection<Star>
+    private rendered = new Collection<GameObject, Pixi.DisplayObject>()
     private players: Collection<Player>
     private turn: Turn
+    private events: Events
 
-    public constructor(container: HTMLElement, {
+    public constructor({
+        container,
+        events,
         created,
         players,
         size,
         stars
-    }: GameData) {
-        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null })))
+    }: GameData<true>) {
+        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null, events, farmers: 0, workers: 0, scientists: 0, population: 8, onUpdate: this.getObjectUpdate(data.id) })))
         this.players = new Collection(players.map(data => new Player({ ...data, stars: [], ships: [] })))
+        this.events = events
         this.populate(stars, players)
 
         this.app = new Pixi.Application({
@@ -48,6 +55,11 @@ class Game {
             overlay: 0x000000
         })
 
+        this.map.viewport.on('click', (e) => {
+            const target = this.rendered.get(e.target)
+            if (target) events?.emit('click', target)
+        })
+
         this.minimap = new SpaceMap({
             container: this.app.stage,
             screenSize: { x: MINIMAP_SIZE, y: MINIMAP_SIZE },
@@ -58,6 +70,10 @@ class Game {
         this.turn = new Turn({ players: this.players.toArray(), onChange: this.handleTurn })
     }
 
+    private getObjectUpdate = (id: string) => () => {
+        this.events?.emit('update', { object: this.stars.get(id) }) // TODO: Or ship.
+    }
+
     public release(): void {
         this.map.release()
         this.minimap.release()
@@ -65,10 +81,9 @@ class Game {
 
     private populate(starsData: StarData[], playersData: PlayerData[]) {
         starsData.forEach(starData => {
-            if (starData.owner) {
-                const star = this.stars.get(starData.id)!
-                star.owner = this.players.get(starData.owner)!
-            }
+            const star = this.stars.get(starData.id)!
+            this.rendered.set(star.graphics, star)
+            if (starData.owner) star.owner = this.players.get(starData.owner)!
         })
 
         // TODO: Populate ships.

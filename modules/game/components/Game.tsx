@@ -1,21 +1,39 @@
 import React from 'react'
-import Http from '../../async/lib/Http'
 
+import Http from '../../async/lib/Http'
 import Game from '../lib/Game'
 import { GameData, GameOptions, LocalGameOptions } from '../types'
+import { useGlobalState } from '../data/GlobalState'
 
 import styles from './Game.module.scss'
+import Sidebar from './Sidebar'
+import Minimap from './Minimap'
+import GameObject from '../lib/GameObject'
+import Events from '../lib/Events'
 
-interface Props extends Partial<Omit<LocalGameOptions, 'container'>> {
+interface Props extends Partial<Omit<LocalGameOptions, 'container'>>, React.ComponentPropsWithoutRef<'div'> {
 
 }
 
 const Map: React.FC<Props> = ({ 
-    nStars = 100
+    nStars = 100,
+    ...props
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
+    const [selectedObject, selectObject] = useGlobalState('selectedObject')
+    const [lastUpdate, setLastUpdate] = useGlobalState('lastUpdate')
 
     React.useEffect(() => {
+        const events = new Events()
+
+        events.on('click', ({ object }) => {
+            selectObject(object)
+        })
+
+        events.on('update', ({ object }) => {
+            setLastUpdate(Date.now())
+        })
+
         let game: Game | null = null
 
         const gameOptions: GameOptions = {
@@ -28,7 +46,7 @@ const Map: React.FC<Props> = ({
         }
 
         Http.post<GameData>('games', gameOptions).then(gameData => {
-            game = new Game(container.current!, gameData)
+            game = new Game({ ...gameData, container: container.current!, events })
         })
 
         return () => {
@@ -37,8 +55,12 @@ const Map: React.FC<Props> = ({
     }, [])
 
     return (
-        <div ref={container} className={styles.root}>
-            
+        <div className={styles.root} {...props}>
+            <div ref={container} className={styles.canvas} />
+            <div className={styles.ui} key={lastUpdate}>
+                <Minimap />
+                <Sidebar />
+            </div>
         </div>
     )
 }

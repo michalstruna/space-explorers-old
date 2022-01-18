@@ -1,0 +1,29 @@
+.root {
+    @include pos(bottom, right);
+    @include padding(1rem);
+    @include size($sidebar-width, calc(100% - $sidebar-width));
+    background-color: $semitransparent-darkest;
+    color: $lightest-color;
+    pointer-events: none;
+
+    &:empty {
+        display: none;
+    }
+
+    & > * {
+        pointer-events: all;
+    }
+}
+
+.header {
+    @include size(100%, $object-header-height);
+    display: flex;
+    justify-content: space-between;
+}
+
+.title {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

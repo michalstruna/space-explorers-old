@@ -1,5 +1,5 @@
 import { PlayerData } from '../types'
-import Collection from '../../native/lib/Collection'
+import Collection from '../../utils/lib/Collection'
 import Star from './Star'
 
 class Player {
