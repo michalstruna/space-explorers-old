@@ -13,7 +13,7 @@ class Player {
         this._id = options.id
         this._name = options.name
         this._color = options.color
-        this._stars = new Collection<Star>(options.stars)
+        this._stars = new Collection<Star>({ items: options.stars })
     }
 
     public get id() {

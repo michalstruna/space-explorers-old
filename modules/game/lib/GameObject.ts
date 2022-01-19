@@ -1,36 +1,36 @@
 import * as Pixi from 'pixi.js'
-import { InteractionEvent } from 'pixi.js'
 
 import { GameObjectData, Point } from '../types'
 import { pcToPx } from './Converter'
 import Player from './Player'
 import Turn from './Turn'
 import Events from './Events'
+import { uuid } from '../../utils/lib/Random'
 
 abstract class GameObject {
 
     public static readonly DEFAULT_VISIBILITY = 1
 
     public readonly id: string
-    public readonly name: string
+    protected _name: string
     protected _position: Point
     protected _owner: Player | null
     protected _visibility: number = GameObject.DEFAULT_VISIBILITY
-    protected readonly events: Events
+    public readonly events: Events
     protected readonly hitArea = new Pixi.Rectangle()
-    protected readonly handleUpdate: () => void
+    public readonly onUpdate: () => void
 
     public readonly graphics: Pixi.Graphics
     public readonly miniGraphics: Pixi.Graphics
     public readonly label: Pixi.Text
 
     public constructor(options: GameObjectData<true>) {
-        this.id = options.id
-        this.name = options.name
+        this.id = options.id || uuid()
+        this._name = options.name
         this._position = options.position
         this._owner = options.owner || null
         this.events = options.events
-        this.handleUpdate = options.onUpdate
+        this.onUpdate = options.onUpdate
 
         this.graphics = new Pixi.Graphics()
         this.miniGraphics = new Pixi.Graphics()
@@ -41,13 +41,17 @@ abstract class GameObject {
         this.bindEvents()
     }
 
+    public get name() {
+        return this._name
+    }
+
     public get position() {
         return this._position
     }
 
     public set position(position: Point) {
         this._position = position
-        this.handleUpdate()
+        this.onUpdate()
     }
 
     public get pxPosition() {
@@ -60,7 +64,7 @@ abstract class GameObject {
 
     public set owner(owner: Player | null) {
         this._owner = owner
-        this.handleUpdate()
+        this.onUpdate()
     }
 
     public get visibility() {
@@ -69,7 +73,7 @@ abstract class GameObject {
 
     public set visibility(visibility: number) {
         this._visibility = visibility
-        this.handleUpdate()
+        this.onUpdate()
     }
 
     public abstract render(turn: Turn): Pixi.DisplayObject

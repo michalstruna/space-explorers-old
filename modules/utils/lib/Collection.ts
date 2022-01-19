@@ -1,10 +1,18 @@
-const getId = (item: any) => typeof item === 'object' && 'id' in item ? item.id : item
+type IdAccessor<Key, Item> = (item: Item) => Key
+
+type CollectionOptions<Key, Item> = {
+    items?: Item[]
+    idAccessor?: IdAccessor<Key, Item>
+}
 
 class Collection<Item, Key = string> extends Map<Key, Item> {
 
-    public constructor(item: Item[] = []) {
+    private idAccessor: IdAccessor<Key, Item>
+
+    public constructor(options?: CollectionOptions<Key, Item>) {
         super()
-        if (item) this.add(item)
+        this.idAccessor = options?.idAccessor || ((item: any) => typeof item === 'object' && 'id' in item ? item.id : item)
+        if (options?.items) this.add(options.items)
     }
 
     public add(item: Item): Item
@@ -20,8 +28,8 @@ class Collection<Item, Key = string> extends Map<Key, Item> {
 
             return result
         } else {
-            if (this.has(getId(item))) return undefined
-            this.set(getId(item), item)
+            if (this.has(this.idAccessor(item))) return undefined
+            this.set(this.idAccessor(item), item)
             return item
         }
     }
@@ -46,15 +54,15 @@ class Collection<Item, Key = string> extends Map<Key, Item> {
     }
 
     public get(key: Key): Item | undefined {
-        return super.get(getId(key))
+        return super.get(key)
     }
 
     public has(key: Key): boolean {
-        return super.has(getId(key))
+        return super.has(key)
     }
 
     public delete(key: Key): boolean {
-        return super.delete(getId(key))
+        return super.delete(key)
     }
 
     public transfer(id: string, destination: Collection<Item>): Item | undefined

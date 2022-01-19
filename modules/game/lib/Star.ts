@@ -1,6 +1,8 @@
 import * as Pixi from 'pixi.js'
-import { StarData } from '../types'
-import { pcToPx } from './Converter'
+import Collection from '../../utils/lib/Collection'
+import BuildingType from '../data/BuildingType'
+import { BuildingData, GeneralBuildingData, StarData } from '../types'
+import Building from './buildings/Building'
 import GameObject from './GameObject'
 import Player from './Player'
 import Turn from './Turn'
@@ -31,6 +33,8 @@ class Star extends GameObject {
     private size: number
     private color: number
 
+    public readonly buildings = new Collection<Building, BuildingType>({ idAccessor: building => building.name, items: [] })
+
     private _maxPopulation: number
     private _population: number
     private _farmers: number
@@ -44,12 +48,25 @@ class Star extends GameObject {
         this.color = colorMap[this.harvard[0]]
         this.size = sizeMap[this.yerkes]
 
-        this._maxPopulation = this.size // TODO: Calculate.
+        this._maxPopulation = this.size
         this._population = options.population
         this._farmers = options.farmers
         this._workers = options.workers
         this._scientists = options.scientists
+
+        for (const building of options.buildings) this.build(building.name, building.level)
     } 
+
+    public static createData() {
+        return {
+            farmers: 0,
+            workers: 0,
+            scientists: 0,
+            population: 8,
+            owner: null,
+            buildings: [] as BuildingData<true>[]
+        }
+    }
 
     public render(): Pixi.DisplayObject {
         const pos = this.pxPosition
@@ -88,7 +105,7 @@ class Star extends GameObject {
         this.owner?.stars.remove(this.id)
         owner?.stars.add(this)
         this._owner = owner
-        this.handleUpdate()
+        this.onUpdate()
     }
 
     public get maxPopulation(): number {
@@ -101,7 +118,7 @@ class Star extends GameObject {
 
     public set population(value: number) {
         this._population = value
-        this.handleUpdate()
+        this.onUpdate()
     }
 
     public get farmers(): number {
@@ -110,7 +127,7 @@ class Star extends GameObject {
 
     public set farmers(value: number) {
         this._farmers = value
-        this.handleUpdate()
+        this.onUpdate()
     }
 
     public get workers(): number {
@@ -119,7 +136,7 @@ class Star extends GameObject {
 
     public set workers(value: number) {
         this._workers = value
-        this.handleUpdate()
+        this.onUpdate()
     }
 
     public get scientists(): number {
@@ -128,7 +145,18 @@ class Star extends GameObject {
 
     public set scientists(value: number) {
         this._scientists = value
-        this.handleUpdate()
+        this.onUpdate()
+    }
+
+    public build(type: BuildingType, level?: number) {
+        const building = this.buildings.get(type)
+
+        if (!building) {
+            const building = Building.getByType(type)
+            this.buildings.add(new building({ events: this.events, level: 1, onUpdate: this.onUpdate, parent: this, id: 'TODO' }))
+        } else {
+            building.level = level ?? (building.level + 1)
+        }
     }
 
 }

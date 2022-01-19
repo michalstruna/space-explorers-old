@@ -4,6 +4,8 @@ import * as Pixi from 'pixi.js'
 import Player from './lib/Player'
 import Star from './lib/Star'
 import Events from './lib/Events'
+import GameObject from './lib/GameObject'
+import BuildingType from './data/BuildingType'
 
 export interface LocalGameOptions {
     container: HTMLElement
@@ -41,7 +43,7 @@ export interface GameObjectData<Populated = false> extends UniqueData {
     name: string
     position: Point
     owner: (Populated extends true ? Player : string) | null
-    events: Populated extends true ? EventEmitte : undefined
+    events: Populated extends true ? Events : undefined
     onUpdate: Populated extends true ? (() => void) : undefined
 }
 
@@ -53,6 +55,21 @@ export interface StarData<Populated = false> extends GameObjectData<Populated> {
     farmers: number
     workers: number
     scientists: number
+
+    buildings: BuildingData<false>[]
+}
+
+export interface InnerGameObjectData<Populated = false> extends Omit<GameObjectData<Populated>, 'position' | 'owner'> {
+    parent: Populated extends true ? GameObject : string
+}
+
+export interface BuildingData<Populated = false> extends InnerGameObjectData<Populated> {
+    name: BuildingType
+    level: number
+}
+
+export interface GeneralBuildingData<Populated = false> extends Omit<BuildingData<Populated>, 'name'> {
+    
 }
 
 export interface PlayerOptions {

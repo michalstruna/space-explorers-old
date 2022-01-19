@@ -9,6 +9,8 @@ import Player from './Player'
 import Turn from './Turn'
 import Events from './Events'
 import GameObject from './GameObject'
+import BuildingType from '../data/BuildingType'
+import Building from './buildings/Building'
 
 const MINIMAP_SIZE = 300
 
@@ -32,8 +34,8 @@ class Game {
         size,
         stars
     }: GameData<true>) {
-        this.stars = new Collection(stars.map(data => new Star({ ...data, owner: null, events, farmers: 0, workers: 0, scientists: 0, population: 8, onUpdate: this.getObjectUpdate(data.id) })))
-        this.players = new Collection(players.map(data => new Player({ ...data, stars: [], ships: [] })))
+        this.stars = new Collection({ items: stars.map(data => new Star({ ...Star.createData(), ...data, owner: null, events, onUpdate: this.getObjectUpdate(data.id) })) })
+        this.players = new Collection({ items: players.map(data => new Player({ ...data, stars: [], ships: [] })) })
         this.events = events
         this.populate(stars, players)
 
