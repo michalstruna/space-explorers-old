@@ -3,7 +3,10 @@ import Collection from '../../utils/lib/Collection'
 import BuildingType from '../data/BuildingType'
 import { BuildingData, GeneralBuildingData, StarData } from '../types'
 import Building from './buildings/Building'
+import CrystalStore from './buildings/CrystalStore'
+import MetalStore from './buildings/MetalStore'
 import GameObject from './GameObject'
+import { getBuildingClass } from './GameObjectFactory'
 import Player from './Player'
 import Turn from './Turn'
 
@@ -57,14 +60,19 @@ class Star extends GameObject {
         for (const building of options.buildings) this.build(building.name, building.level)
     } 
 
-    public static createData() {
+    public static createData({ events, onUpdate, owner, position }: Pick<GameObject, 'onUpdate' | 'events' | 'owner' | 'position'>) { // TODO: Move to factory.
+        const options = { events, onUpdate, owner, position, id: 'TODO', level: 1 }
+
         return {
             farmers: 0,
             workers: 0,
             scientists: 0,
             population: 8,
             owner: null,
-            buildings: [] as BuildingData<true>[]
+            buildings: [
+                new MetalStore(options),
+                new CrystalStore(options)
+            ]
         }
     }
 
@@ -95,6 +103,10 @@ class Star extends GameObject {
         label.y = this.pxPosition.y + this.size * 4
         // TODO: super(this.size * constant) - radius of GameObject + hitArea in parent?
         return label
+    }
+
+    public renderPreview(turn: Turn): string {
+        return 'stars/sol.png'
     }
 
     public get owner() {
@@ -152,8 +164,8 @@ class Star extends GameObject {
         const building = this.buildings.get(type)
 
         if (!building) {
-            const building = Building.getByType(type)
-            this.buildings.add(new building({ events: this.events, level: 1, onUpdate: this.onUpdate, parent: this, id: 'TODO' }))
+            const Building = getBuildingClass(type)
+            this.buildings.add(new Building({ events: this.events, level: 1, onUpdate: this.onUpdate, id: 'TODO', owner: this.owner, position: this.position }))
         } else {
             building.level = level ?? (building.level + 1)
         }

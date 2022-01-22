@@ -1,8 +1,8 @@
 import React from 'react'
-import Star from '../lib/Star'
 
 import styles from './Sidebar.module.scss'
 import StarMenu from './StarMenu'
+import Star from '../lib/Star'
 import { useGlobalState } from '../data/GlobalState'
 import CloseButton from '../../utils/components/CloseButton'
 

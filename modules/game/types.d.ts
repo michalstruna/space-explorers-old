@@ -59,11 +59,7 @@ export interface StarData<Populated = false> extends GameObjectData<Populated> {
     buildings: BuildingData<false>[]
 }
 
-export interface InnerGameObjectData<Populated = false> extends Omit<GameObjectData<Populated>, 'position' | 'owner'> {
-    parent: Populated extends true ? GameObject : string
-}
-
-export interface BuildingData<Populated = false> extends InnerGameObjectData<Populated> {
+export interface BuildingData<Populated = false> extends GameObjectData<Populated> {
     name: BuildingType
     level: number
 }

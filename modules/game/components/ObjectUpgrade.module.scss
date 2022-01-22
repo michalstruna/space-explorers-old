@@ -1,0 +1,49 @@
+.root {
+
+}
+
+.main {
+    display: flex;
+}
+
+.image {
+    @include img(null, cover);
+    @include size(3.4rem);
+    flex: 0 0 4rem;
+}
+
+.content {
+    flex: 1 0 0;
+    font-size: 85%;
+    margin-left: 0.5rem;
+}
+
+.name {
+    display: inline-block;
+    font-size: 115%;
+    margin: 0;
+    margin-bottom: 0.2rem;
+    padding: 0;
+}
+
+.upgrade {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    width: 100%;
+
+    &__resources {
+        display: flex;
+
+        & > div {
+            margin-right: 1rem;
+        }
+    }
+
+    &__button {
+        @include img("controls/upgrade.svg", 60%);
+        @include opacity-hover;
+        @include size(2rem);
+        margin: -0.5rem 0;
+    }
+}

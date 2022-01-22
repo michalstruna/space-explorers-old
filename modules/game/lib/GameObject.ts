@@ -80,6 +80,8 @@ abstract class GameObject {
 
     public abstract renderMini(turn: Turn): Pixi.DisplayObject
 
+    public abstract renderPreview(turn: Turn): string
+
     public renderLabel(turn: Turn): Pixi.Text {
         const pxPosition = this.pxPosition
 

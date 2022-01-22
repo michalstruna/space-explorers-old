@@ -9,6 +9,7 @@
     },
     "dependencies": {
         "axios": "^0.24.0",
+        "classnames": "^2.3.1",
         "keycode": "^2.2.1",
         "next": "12.0.7",
         "numeral": "^2.0.6",

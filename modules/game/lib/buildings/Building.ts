@@ -1,18 +1,11 @@
 import BuildingType from '../../data/BuildingType'
 import { BuildingData } from '../../types'
-import InnerGameObject from '../InnerGameObject'
-import MetalStore from './MetalStore'
+import GameObject from '../GameObject'
+import Turn from '../Turn'
 
-
-abstract class Building extends InnerGameObject {
+abstract class Building extends GameObject {
 
     private _level: number
-
-    public static getByType(type: BuildingType) {
-        switch (type) {
-            case BuildingType.METAL_STORE: return MetalStore
-        }
-    }
 
     public constructor(options: BuildingData<true>) {
         super(options)
@@ -29,6 +22,10 @@ abstract class Building extends InnerGameObject {
 
     public set level(value: number) {
         this._level = value
+    }
+
+    public renderPreview(turn: Turn): string {
+        return 'buildings/metalStore.png'
     }
 
     

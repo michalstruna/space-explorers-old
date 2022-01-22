@@ -4,11 +4,9 @@ import Http from '../../async/lib/Http'
 import Game from '../lib/Game'
 import { GameData, GameOptions, LocalGameOptions } from '../types'
 import { useGlobalState } from '../data/GlobalState'
-
 import styles from './Game.module.scss'
 import Sidebar from './Sidebar'
 import Minimap from './Minimap'
-import GameObject from '../lib/GameObject'
 import Events from '../lib/Events'
 
 interface Props extends Partial<Omit<LocalGameOptions, 'container'>>, React.ComponentPropsWithoutRef<'div'> {
@@ -20,7 +18,7 @@ const Map: React.FC<Props> = ({
     ...props
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
-    const [selectedObject, selectObject] = useGlobalState('selectedObject')
+    const [, selectObject] = useGlobalState('selectedObject')
     const [lastUpdate, setLastUpdate] = useGlobalState('lastUpdate')
 
     React.useEffect(() => {

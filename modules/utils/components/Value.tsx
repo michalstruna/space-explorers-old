@@ -1,31 +1,53 @@
 import React from 'react'
+import ClassNames from 'classnames'
 
 import styles from './ui.module.scss'
 import { format, formatShort } from '../lib/Numbers'
 
 interface Props extends React.ComponentPropsWithoutRef<'div'> {
-    name: string
-    icon: string
     value: number
-    maxValue: number
+
+    icon?: string
+    name?: string
+    tooltip?: string | boolean
+    short?: boolean
+    sign?: boolean
+    maxValue?: number
+    minimum?: number
+    maximum?: number
 }
 
-const Value: React.FC<Props> = ({ name, icon, value, maxValue, ...props }) => {
+const Value: React.FC<Props> = ({ value, icon, name, tooltip, short, sign, maxValue, minimum, maximum, ...props }) => {
+
+    const formatter = short ? formatShort : format
 
     return (
-        <div className={styles.value} style={{ backgroundImage: `url("/${icon}")` }} {...props}>
-            <div className={styles.value__label}>
-                {name}
-            </div>
+        <div
+            className={ClassNames(styles.value, { [styles.value__icon]: icon })}
+            style={icon ? { backgroundImage: `url(${icon})` } : undefined}
+            {...props}>
+            {name && <>
+                <div className={styles.value__name}>
+                    {name}
+                </div>
+                <br />
+            </>}
             <div className={styles.value__main}>
-                <div className={styles.value__current}>{value}</div>
-                {maxValue !== undefined ?  (
-                    <>
-                        <div className={styles.value__max}>{formatShort(maxValue)}</div>
-                    </>
-                ) : null}
+                <div className={ClassNames(styles.value__current, {
+                    [styles['value__current--positive']]: sign && value > 0,
+                    [styles['value__current--negative']]: sign && value < 0,
+                    [styles['value__current--zero']]: sign && !value,
+                    [styles['value__current--invalid']]: (minimum !== undefined && value < minimum) || (maximum !== undefined && value > maximum)
+                })}>
+                {sign && value >= 0 ? '+' : ''}{formatter(value)}
             </div>
+            {maxValue && (
+                <div className={styles.value__max}>
+                    {formatShort(maxValue)}
+                </div>
+            )}
         </div>
+        </div >
     )
 }
 

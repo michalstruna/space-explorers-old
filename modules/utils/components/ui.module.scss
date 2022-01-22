@@ -5,27 +5,54 @@
 }
 
 .value {
-    @include img(null, auto 1.5rem, left center);
+    align-items: center;
     display: inline-block;
 
-    &__label, &__main {
-        padding-left: 1.8rem;
-        vertical-align: middle;
+    &__space {
+        margin: 0 0.5em;
     }
 
-    &__current, &__max {
+    &__icon {
+        @include img(null, auto 1.5em, left center);
+        padding-left: 1.8em;
+    }
+
+    &__name {
+        display: inline-block;
+    }
+
+    &__main {
         display: inline-block;
     }
 
     &__current {
+        display: inline-block;
         font-weight: bold;
+
+        &--positive {
+            color: $light-green-color;
+        }
+
+        &--negative {
+            color: $light-red-color;
+        }
+
+        &--zero {
+            color: $light-color;
+        }
+
+        &--invalid {
+            color: $light-red-color;
+        }
     }
 
     &__max {
+        display: inline-block;
+        
         &:before {
             content: "/";
             display: inline-block;
-            margin: 0 0.3em;
+            margin: 0.2rem;
         }
     }
 }

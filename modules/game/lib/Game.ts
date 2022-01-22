@@ -34,7 +34,12 @@ class Game {
         size,
         stars
     }: GameData<true>) {
-        this.stars = new Collection({ items: stars.map(data => new Star({ ...Star.createData(), ...data, owner: null, events, onUpdate: this.getObjectUpdate(data.id) })) })
+        this.stars = new Collection({ items: stars.map(data => {
+            const onUpdate = this.getObjectUpdate(data.id)
+            const star = new Star({ ...Star.createData({ onUpdate, events, position: data.position, owner: null }), ...data, owner: null, events, onUpdate })
+
+            return star
+        }) })
         this.players = new Collection({ items: players.map(data => new Player({ ...data, stars: [], ships: [] })) })
         this.events = events
         this.populate(stars, players)

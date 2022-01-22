@@ -5,10 +5,10 @@ import { GeneralBuildingData } from '../../types'
 import Turn from '../Turn'
 import Building from './Building'
 
-class MetalStore extends Building {
+class CrystalStore extends Building {
 
     public constructor(options: GeneralBuildingData<true>) {
-        super({ ...options, name: BuildingType.METAL_STORE })
+        super({ ...options, name: BuildingType.CRYSTAL_STORE })
     }
 
     public render(turn: Turn): DisplayObject {
@@ -21,4 +21,4 @@ class MetalStore extends Building {
 
 }
 
-export default MetalStore
+export default CrystalStore
