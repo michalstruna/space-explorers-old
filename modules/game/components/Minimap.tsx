@@ -1,6 +1,6 @@
 import React from 'react'
 
-import styles from './Minimap.module.scss'
+import styles from './Game.module.scss'
 
 interface Props extends React.ComponentPropsWithoutRef<'div'> {
 
@@ -9,7 +9,7 @@ interface Props extends React.ComponentPropsWithoutRef<'div'> {
 const Minimap: React.FC<Props> = ({ ...props }) => {
 
     return (
-        <div className={styles.root} {...props}>
+        <div className={styles.ui__minimap} {...props}>
             
         </div>
     )

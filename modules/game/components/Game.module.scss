@@ -17,4 +17,23 @@
     & > * {
         pointer-events: all;
     }
+
+    &__right {
+        @include pos(right, top);
+        @include size($sidebar-width, 100%);
+        overflow-y: auto;
+    }
+
+    &__minimap {
+        border-left: 2px solid $medium-color;
+        border-bottom: 2px solid $medium-color;
+        box-sizing: border-box;
+        height: $sidebar-width;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: $sidebar-width;
+    }
+    
 }

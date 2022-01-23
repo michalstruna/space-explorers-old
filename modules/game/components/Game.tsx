@@ -5,7 +5,7 @@ import Game from '../lib/Game'
 import { GameData, GameOptions, LocalGameOptions } from '../types'
 import { useGlobalState } from '../data/GlobalState'
 import styles from './Game.module.scss'
-import Sidebar from './Sidebar'
+import Tab from './Tab'
 import Minimap from './Minimap'
 import Events from '../lib/Events'
 
@@ -56,8 +56,10 @@ const Map: React.FC<Props> = ({
         <div className={styles.root} {...props}>
             <div ref={container} className={styles.canvas} />
             <div className={styles.ui} key={lastUpdate}>
-                <Minimap />
-                <Sidebar />
+                <div className={styles.ui__right}>
+                    <Minimap />
+                </div>
+                <Tab />
             </div>
         </div>
     )

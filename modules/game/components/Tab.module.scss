@@ -1,0 +1,41 @@
+.root {
+    @include padding(1rem);
+    @include size(35rem, 32rem);
+    background-color: $dark-color;
+    color: $lightest-color;
+    overflow-y: auto;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    &:empty {
+        display: none;
+    }
+
+    & > * {
+        pointer-events: all;
+    }
+}
+
+.header {
+    @include size(100%, $object-header-height, true);
+    padding-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.title {
+    display: inline-block;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.owner {
+    display: inline-block;
+    margin-right: 1rem;
+}
