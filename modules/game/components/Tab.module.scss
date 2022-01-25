@@ -1,9 +1,7 @@
 .root {
-    @include padding(1rem);
     @include size(35rem, 32rem);
-    background-color: $dark-color;
+    background-color: $semitransparent-darkest;
     color: $lightest-color;
-    overflow-y: auto;
 
     position: absolute;
     left: 50%;
@@ -21,9 +19,18 @@
 
 .header {
     @include size(100%, $object-header-height, true);
-    padding-bottom: 1rem;
+    align-items: center;
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
+    padding: 0 1rem;
+}
+
+.main {
+    @include padding(1rem);
+    @include size(100%, calc(100% - $object-header-height));
+    background-color: $dark-color;
+    overflow-y: auto;
 }
 
 .title {

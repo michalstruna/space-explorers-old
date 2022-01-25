@@ -20,7 +20,7 @@
 
     &__right {
         @include pos(right, top);
-        @include size($sidebar-width, 100%);
+        @include size($sidebar-width);
         overflow-y: auto;
     }
 

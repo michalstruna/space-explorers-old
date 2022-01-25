@@ -25,7 +25,9 @@ const Tab: React.FC<Props> = ({ ...props }) => {
                 </div>
                 <CloseButton onClick={() => selectObject(null)} />
             </header>
-            {selectedObject instanceof Star ? <StarMenu star={selectedObject} /> : null}
+            <main className={styles.main}>
+                {selectedObject instanceof Star ? <StarMenu star={selectedObject} /> : null}
+            </main>
         </div>
     )
 }

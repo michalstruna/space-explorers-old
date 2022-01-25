@@ -19,7 +19,7 @@ const Map: React.FC<Props> = ({
 }) => {
     const container = React.useRef<HTMLDivElement>(null)
     const [, selectObject] = useGlobalState('selectedObject')
-    const [lastUpdate, setLastUpdate] = useGlobalState('lastUpdate')
+    const [, setLastUpdate] = useGlobalState('lastUpdate')
 
     React.useEffect(() => {
         const events = new Events()
@@ -28,7 +28,7 @@ const Map: React.FC<Props> = ({
             selectObject(object)
         })
 
-        events.on('update', ({ object }) => {
+        events.on('update', () => {
             setLastUpdate(Date.now())
         })
 
@@ -55,7 +55,7 @@ const Map: React.FC<Props> = ({
     return (
         <div className={styles.root} {...props}>
             <div ref={container} className={styles.canvas} />
-            <div className={styles.ui} key={lastUpdate}>
+            <div className={styles.ui}>
                 <div className={styles.ui__right}>
                     <Minimap />
                 </div>
