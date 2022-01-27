@@ -38,3 +38,40 @@
     }
 
 }
+
+.fleet {
+    @include size(10.5rem, 17rem);
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+
+    &__slots {
+        @include size(3rem, 100%);
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0 0.25rem;
+
+        &--defence {
+            justify-content: space-between;
+        }
+    }
+
+    &__slot {
+        @include size(3rem);
+        border: 1px dashed $medium-color;
+        cursor: pointer;
+        margin: 0.125rem;
+        transition: background-color $fast-duration, border-color $medium-duration;
+
+        &:hover {
+            background-color: $medium-color;
+            border-color: $light-color;
+        }
+
+        &--inactive {
+            display: none;
+        }
+    }
+
+}

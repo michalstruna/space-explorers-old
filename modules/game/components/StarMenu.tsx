@@ -5,6 +5,7 @@ import Value from '../../utils/components/Value'
 import Star from '../lib/Star'
 
 import styles from './ObjectMenu.module.scss'
+import FleetSlots from './FleetSlots'
 
 interface Props extends React.ComponentPropsWithoutRef<'div'> {
     star: Star
@@ -34,7 +35,9 @@ const StarMenu: React.FC<Props> = ({ star, ...props }) => {
                     <Stack icon='icons/worker.svg' value={star.workers} text={`Workers: ${star.workers}/${star.workers + free} • Efficiency: +25 %`} onChange={w => star.workers = w} max={star.workers + free} />
                     <Stack icon='icons/scientist.svg' value={star.scientists} text={`Scientists: ${star.scientists}/${star.scientists + free}`} onChange={s => star.scientists = s} max={star.scientists + free} />
                 </div>
-                <div />
+                <div>
+                    <FleetSlots ships={[]} size={5} defenceSize={3} />
+                </div>
             </div>
 
             <h2 className={styles.section__title}>

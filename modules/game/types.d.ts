@@ -81,13 +81,16 @@ export interface PlayerData<Populated = false> {
     ships: string[] // TODO: Populated.
 }
 
-export interface ShipComponent {
-    name: string
+export interface ShipComponentData<Populated = false> extends GameObjectData<Populated> { // TODO?
     speed: number
     cargo: number
     mass: number
 }
 
-export interface ShipData<Populated = false> extends GameObjectData<Populated> {
+export interface ShipPatternData<Populated = false> extends GameObjectData<Populated> {
+    components: ShipComponentData<Populated>
+}
+
+export interface ShipData<Populated = false> extends ShipPatternData<Populated> {
     
 }

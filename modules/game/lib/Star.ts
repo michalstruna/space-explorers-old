@@ -1,7 +1,7 @@
 import * as Pixi from 'pixi.js'
 import Collection from '../../utils/lib/Collection'
 import BuildingType from '../data/BuildingType'
-import { BuildingData, GeneralBuildingData, StarData } from '../types'
+import { StarData } from '../types'
 import Building from './buildings/Building'
 import CrystalStore from './buildings/CrystalStore'
 import MetalStore from './buildings/MetalStore'
