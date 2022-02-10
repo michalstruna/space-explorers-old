@@ -8,10 +8,6 @@
     align-items: center;
     display: inline-block;
 
-    &__space {
-        margin: 0 0.5em;
-    }
-
     &__icon {
         @include img(null, auto 1.5em, left center);
         padding-left: 1.8em;
@@ -109,6 +105,7 @@
 
     &__info {
         font-size: 90%;
+        margin-top: 0.5rem;
     }
 
 }

@@ -18,23 +18,21 @@ const ObjectProps: React.FC<Props> = ({ object, ...props }) => {
                 <div className={styles.image} style={{ backgroundImage: 'url("https://inhabitat.com/wp-content/blogs.dir/1/files/2012/04/london-olympic-medal-metal-manufacturer-rio-tinto-accused-of-pollution-ill-treatment-2-537x357.jpg")' }} />
 
                 <div className={styles.content}>
-                    <h3 className={styles.name}>{object.name.toLocaleLowerCase()}</h3> (lv. {object.level} {isHover ? <Value value={1} sign={true} /> : null})
+                    <h3 className={styles.name}>{object.name.toLocaleLowerCase()}</h3> ({object.level}{isHover ? ' ' : ''}{isHover ? <Value value={1} sign={true} /> : null})
                     <br />
-                    Kapacita  <Value value={9871} /> {isHover ? <Value value={2132} sign={true} /> : null}
+                    Kapacita <Value value={9871} /> {isHover ? <Value value={2132} sign={true} /> : null}
                     <br />
                     Výkon <Value value={3214} /> {isHover ? <Value value={213} sign={true} /> : null}
                 </div>
             </div>
 
-            <div className={styles.upgrade}>
-                    <div className={styles.upgrade__resources}>
-                        <Value icon='icons/metal.svg' value={100} maximum={50} />
-                        <Value icon='icons/crystal.svg' value={100} />
-                        <Value icon='icons/hours.svg' value={4} />
-                    </div>
+            {isHover && <div className={styles.resources}>
+                <Value icon='icons/metal.svg' value={12200} maximum={50}/>
+                <Value icon='icons/crystal.svg' value={1200} />
+                <Value icon='icons/hours.svg' value={40} />
+            </div>}
 
-                    <button className={styles.upgrade__button} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} />
-                </div>
+            <button className={styles.upgrade} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} />
         </div>
     )
 }

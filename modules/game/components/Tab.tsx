@@ -1,7 +1,7 @@
 import React from 'react'
 
 import styles from './Tab.module.scss'
-import StarMenu from './StarMenu'
+import StarView from './StarView'
 import Star from '../lib/Star'
 import { useGlobalState } from '../data/GlobalState'
 import CloseButton from '../../utils/components/CloseButton'
@@ -26,7 +26,7 @@ const Tab: React.FC<Props> = ({ ...props }) => {
                 <CloseButton onClick={() => selectObject(null)} />
             </header>
             <main className={styles.main}>
-                {selectedObject instanceof Star ? <StarMenu star={selectedObject} /> : null}
+                {selectedObject instanceof Star ? <StarView star={selectedObject} /> : null}
             </main>
         </div>
     )

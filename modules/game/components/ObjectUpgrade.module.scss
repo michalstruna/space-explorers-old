@@ -1,5 +1,5 @@
 .root {
-
+    position: relative;
 }
 
 .main {
@@ -8,7 +8,7 @@
 
 .image {
     @include img(null, cover);
-    @include size(3.4rem);
+    @include size(3.7rem);
     flex: 0 0 4rem;
 }
 
@@ -26,24 +26,22 @@
     padding: 0;
 }
 
+.resources {
+    @include pos(right);
+    background-color: $semitransparent-darkest;
+    padding: 0.5rem;
+    top: 100%;
+    z-index: 10;
+
+    & > div {
+        display: block;
+    }
+}
+
 .upgrade {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    width: 100%;
-
-    &__resources {
-        display: flex;
-
-        & > div {
-            margin-right: 1rem;
-        }
-    }
-
-    &__button {
-        @include img("controls/upgrade.svg", 60%);
-        @include opacity-hover;
-        @include size(2rem);
-        margin: -0.5rem 0;
-    }
+    @include img("controls/upgrade.svg", 60%);
+    @include opacity-hover;
+    @include pos(right, bottom);
+    @include size(2rem);
+    margin: -0.5rem 0;
 }

@@ -2,7 +2,7 @@ import ClassNames from 'classnames'
 import React from 'react'
 
 import Ship from '../lib/ships/Ship'
-import styles from './ObjectMenu.module.scss'
+import styles from './ObjectView.module.scss'
 
 interface Props extends React.ComponentPropsWithoutRef<'div'> {
     ships: Ship[]

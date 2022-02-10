@@ -23,7 +23,7 @@ const Stack: React.FC<Props> = ({ icon, value, text, onChange, max, ...props }) 
         for (let i = 0; i < value; i++) {
             result.push(
                 <div className={styles.stack__item} style={{ maxWidth }} key={i}>
-                    <div className={styles['stack__item--inner']} style={{ backgroundImage: `url(/${icon})` }} />
+                    <div className={styles['stack__item--inner']} style={{ backgroundImage: `url(${icon})` }} />
                 </div>
             )
         }
