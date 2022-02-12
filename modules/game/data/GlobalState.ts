@@ -6,6 +6,6 @@ const defaultState = {
     lastUpdate: 0
 }
 
-const { useGlobalState } = createGlobalState(defaultState)
+const { useGlobalState, setGlobalState, getGlobalState } = createGlobalState(defaultState)
 
-export { useGlobalState }
+export { useGlobalState, setGlobalState, getGlobalState }

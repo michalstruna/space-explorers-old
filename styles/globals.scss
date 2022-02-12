@@ -42,3 +42,9 @@ button {
         pointer-events: none;
     }
 }
+
+hr {
+    border-color: $semitransparent-lightest;
+    margin: 1rem auto;
+    width: 80%;
+}

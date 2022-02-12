@@ -8,8 +8,8 @@
 
 .image {
     @include img(null, cover);
-    @include size(3.7rem);
-    flex: 0 0 4rem;
+    @include size(3.5rem);
+    flex: 0 0 3.5rem;
 }
 
 .content {
@@ -20,21 +20,13 @@
 
 .name {
     display: inline-block;
-    font-size: 115%;
+    font-size: 120%;
     margin: 0;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.3rem;
     padding: 0;
-}
 
-.resources {
-    @include pos(right);
-    background-color: $semitransparent-darkest;
-    padding: 0.5rem;
-    top: 100%;
-    z-index: 10;
-
-    & > div {
-        display: block;
+    &__container {
+        white-space: nowrap;
     }
 }
 
@@ -44,4 +36,9 @@
     @include pos(right, bottom);
     @include size(2rem);
     margin: -0.5rem 0;
+}
+
+.resources {
+    @include gap(0.5rem);
+    font-size: 90%;
 }

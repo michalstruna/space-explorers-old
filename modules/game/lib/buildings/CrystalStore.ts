@@ -19,6 +19,10 @@ class CrystalStore extends Building {
         throw new Error('Method not implemented.')
     }
 
+    public renderPreview(turn: Turn): string {
+        return '/buildings/crystalMine.jpg'
+    }
+
 }
 
 export default CrystalStore

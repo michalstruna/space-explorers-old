@@ -23,12 +23,8 @@ abstract class Building extends GameObject {
     public set level(value: number) {
         this._level = value
     }
-
-    public renderPreview(turn: Turn): string {
-        return 'buildings/metalStore.png'
-    }
-
     
+    public abstract renderPreview(turn: Turn): string
 }
 
 export default Building

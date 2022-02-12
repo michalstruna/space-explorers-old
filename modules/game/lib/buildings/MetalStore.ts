@@ -19,6 +19,10 @@ class MetalStore extends Building {
         throw new Error('Method not implemented.')
     }
 
+    public renderPreview(turn: Turn): string {
+        return '/buildings/metalMine.jpg'
+    }
+
 }
 
 export default MetalStore

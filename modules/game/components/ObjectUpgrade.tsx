@@ -1,6 +1,8 @@
 import React from 'react'
+import Tooltip from '../../utils/components/Tooltip'
 import Value from '../../utils/components/Value'
 import Building from '../lib/buildings/Building'
+import Turn from '../lib/Turn'
 
 import styles from './ObjectUpgrade.module.scss'
 
@@ -10,29 +12,45 @@ interface Props extends React.ComponentPropsWithoutRef<'div'> {
 
 const ObjectProps: React.FC<Props> = ({ object, ...props }) => {
 
-    const [isHover, setHover] = React.useState(false)
+    const turn = null as any // TODO
 
     return (
         <div className={styles.root} {...props}>
             <div className={styles.main}>
-                <div className={styles.image} style={{ backgroundImage: 'url("https://inhabitat.com/wp-content/blogs.dir/1/files/2012/04/london-olympic-medal-metal-manufacturer-rio-tinto-accused-of-pollution-ill-treatment-2-537x357.jpg")' }} />
+                <div className={styles.image} style={{ backgroundImage: `url("${object.renderPreview(turn)}")` }} />
 
                 <div className={styles.content}>
-                    <h3 className={styles.name}>{object.name.toLocaleLowerCase()}</h3> ({object.level}{isHover ? ' ' : ''}{isHover ? <Value value={1} sign={true} /> : null})
-                    <br />
-                    Kapacita <Value value={9871} /> {isHover ? <Value value={2132} sign={true} /> : null}
-                    <br />
-                    Výkon <Value value={3214} /> {isHover ? <Value value={213} sign={true} /> : null}
+                    <div className={styles.name__container}>
+                        <h3 className={styles.name}>{object.name.toLocaleLowerCase()}</h3> (lv. {object.level})
+                    </div>
+                    Kapacita <Value value={9871} /><br />
+                    Výkon <Value value={3214} />
                 </div>
             </div>
 
-            {isHover && <div className={styles.resources}>
-                <Value icon='icons/metal.svg' value={12200} maximum={50}/>
-                <Value icon='icons/crystal.svg' value={1200} />
-                <Value icon='icons/hours.svg' value={40} />
-            </div>}
+            <Tooltip trigger={<button className={styles.upgrade} />}>
+                <div className={styles.main}>
+                    <div className={styles.image} style={{ backgroundImage: `url("${object.renderPreview(turn)}")` }} />
 
-            <button className={styles.upgrade} onMouseOver={() => setHover(true)} onMouseOut={() => setHover(false)} />
+                    <div className={styles.content}>
+                        <div className={styles.name__container}>
+                            <h3 className={styles.name}>{object.name.toLocaleLowerCase()}</h3> (lv. {object.level} <Value value={1} sign={true} />)
+                        </div>
+                        Kapacita <Value value={9871} /> <Value value={2132} sign={true} /><br />
+                        Výkon <Value value={3214} /> <Value value={213} sign={true} />
+                    </div>
+                </div>
+
+
+
+
+                <hr />
+                <div className={styles.resources}>
+                    <Value icon='icons/metal.svg' value={12200} maximum={50} /> <Value icon='icons/crystal.svg' value={1200} /> <Value icon='icons/hours.svg' value={40} />
+                </div>
+            </Tooltip>
+
+
         </div>
     )
 }
