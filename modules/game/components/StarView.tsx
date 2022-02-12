@@ -2,7 +2,7 @@ import React from 'react'
 import ClassNames from 'classnames'
 
 import Stack from '../../utils/components/Stack'
-import ObjectUpgrade from './ObjectUpgrade'
+import ObjectTile from './ObjectTile'
 import Value from '../../utils/components/Value'
 import Star from '../lib/Star'
 
@@ -46,7 +46,7 @@ const StarView: React.FC<Props> = ({ star, ...props }) => {
             <Value icon='/icons/building.svg' name='Budovy' className={styles.section__title} />
 
             <div className={styles.upgrades}>
-                {[...star.buildings.toArray(), ...star.buildings.toArray(), ...star.buildings.toArray(), ...star.buildings.toArray(), ...star.buildings.toArray()].map((b, i) => <ObjectUpgrade key={i} object={b} />)}
+                {[...star.buildings.toArray(), ...star.buildings.toArray(), ...star.buildings.toArray(), ...star.buildings.toArray(), ...star.buildings.toArray()].map((b, i) => <ObjectTile key={i} object={b} />)}
             </div>
 
         </div>

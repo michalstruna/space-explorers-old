@@ -4,7 +4,7 @@ import Value from '../../utils/components/Value'
 import Building from '../lib/buildings/Building'
 import Turn from '../lib/Turn'
 
-import styles from './ObjectUpgrade.module.scss'
+import styles from './ObjectTile.module.scss'
 
 interface Props extends React.ComponentPropsWithoutRef<'div'> {
     object: Building
