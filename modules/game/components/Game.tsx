@@ -20,6 +20,7 @@ const Map: React.FC<Props> = ({
     const container = React.useRef<HTMLDivElement>(null)
     const [, selectObject] = useGlobalState('selectedObject')
     const [, setLastUpdate] = useGlobalState('lastUpdate')
+    const [game, setGame] = useGlobalState('game')
 
     React.useEffect(() => {
         const events = new Events()
@@ -32,8 +33,6 @@ const Map: React.FC<Props> = ({
             setLastUpdate(Date.now())
         })
 
-        let game: Game | null = null
-
         const gameOptions: GameOptions = {
             nStars,
             players: [
@@ -44,10 +43,11 @@ const Map: React.FC<Props> = ({
         }
 
         Http.post<GameData>('games', gameOptions).then(gameData => {
-            game = new Game({ ...gameData, container: container.current!, events })
+            setGame(new Game({ ...gameData, container: container.current!, events }))
         })
 
         return () => {
+            setGame(null)
             game?.release()
         }
     }, [])

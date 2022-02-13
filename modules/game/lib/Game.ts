@@ -9,8 +9,6 @@ import Player from './Player'
 import Turn from './Turn'
 import Events from './Events'
 import GameObject from './GameObject'
-import BuildingType from '../data/BuildingType'
-import Building from './buildings/Building'
 
 const MINIMAP_SIZE = 300
 
@@ -23,7 +21,7 @@ class Game {
     private stars: Collection<Star>
     private rendered = new Collection<GameObject, Pixi.DisplayObject>()
     private players: Collection<Player>
-    private turn: Turn
+    public readonly turn: Turn
     private events: Events
 
     public constructor({
@@ -97,7 +95,7 @@ class Game {
     }
 
     private handleTick = () => {
-
+        
     }
 
     private handleTurn = () => {

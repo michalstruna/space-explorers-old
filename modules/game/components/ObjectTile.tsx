@@ -1,8 +1,8 @@
 import React from 'react'
 import Tooltip from '../../utils/components/Tooltip'
 import Value from '../../utils/components/Value'
+import { useGlobalState } from '../data/GlobalState'
 import Building from '../lib/buildings/Building'
-import Turn from '../lib/Turn'
 
 import styles from './ObjectTile.module.scss'
 
@@ -12,12 +12,12 @@ interface Props extends React.ComponentPropsWithoutRef<'div'> {
 
 const ObjectProps: React.FC<Props> = ({ object, ...props }) => {
 
-    const turn = null as any // TODO
+    const [game] = useGlobalState('game')
 
     return (
         <div className={styles.root} {...props}>
             <div className={styles.main}>
-                <div className={styles.image} style={{ backgroundImage: `url("${object.renderPreview(turn)}")` }} />
+                <div className={styles.image} style={{ backgroundImage: `url("${object.renderPreview(game!.turn)}")` }} />
 
                 <div className={styles.content}>
                     <div className={styles.name__container}>
@@ -30,7 +30,7 @@ const ObjectProps: React.FC<Props> = ({ object, ...props }) => {
 
             <Tooltip trigger={<button className={styles.upgrade} />}>
                 <div className={styles.main}>
-                    <div className={styles.image} style={{ backgroundImage: `url("${object.renderPreview(turn)}")` }} />
+                    <div className={styles.image} style={{ backgroundImage: `url("${object.renderPreview(game!.turn)}")` }} />
 
                     <div className={styles.content}>
                         <div className={styles.name__container}>
@@ -40,9 +40,6 @@ const ObjectProps: React.FC<Props> = ({ object, ...props }) => {
                         Výkon <Value value={3214} /> <Value value={213} sign={true} />
                     </div>
                 </div>
-
-
-
 
                 <hr />
                 <div className={styles.resources}>
